@@ -1,4 +1,4 @@
-package wmiv2
+package mi
 
 type MI_RESULT uint64
 
@@ -31,3 +31,5 @@ const (
 	MI_RESULT_SERVER_LIMITS_EXCEEDED                               // 27
 	MI_RESULT_SERVER_IS_SHUTTING_DOWN                              // 28
 )
+
+// type MI_ENUMERATION

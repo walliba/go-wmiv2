@@ -1,4 +1,4 @@
-package wmiv2
+package mi
 
 import "golang.org/x/sys/windows"
 
