@@ -29,9 +29,23 @@ type MI_SessionFT struct {
 	TestConnection      uintptr
 }
 
-func (session *MI_Session) Close() MI_RESULT {
+func (session *MI_Session) Close() uint64 {
 
 	r0, _, _ := syscall.SyscallN(session.ft.Close, uintptr(unsafe.Pointer(session)), 0, uintptr(0))
 
-	return MI_RESULT(r0)
+	return uint64(r0)
+}
+
+func (session *MI_Session) EnumerateInstances() (*MI_Operation, uint64) {
+	var namespace = "root\\cimv2"
+	var class = "Win32_Process"
+
+	ns, _ := syscall.UTF16PtrFromString(namespace)
+	c, _ := syscall.UTF16PtrFromString(class)
+
+	var miOperation = MI_OPERATION_NULL
+
+	r0, _, _ := syscall.SyscallN(session.ft.EnumerateInstances, 0, 0, uintptr(unsafe.Pointer(&ns)), uintptr(unsafe.Pointer(&c)), 0, 0, uintptr(unsafe.Pointer(&miOperation)))
+
+	return miOperation, uint64(r0)
 }

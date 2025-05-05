@@ -41,4 +41,12 @@ func EnumerateAllInstances() {
 	}()
 
 	fmt.Printf("*MI_Session: %#x\n", &session)
+
+	operation, err := session.EnumerateInstances()
+
+	if err != 0 {
+		panic("failed to enumerate session instances")
+	}
+
+	operation
 }

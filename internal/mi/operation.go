@@ -14,3 +14,5 @@ type MI_OperationFT struct {
 	GetIndication uintptr
 	GetClass      uintptr
 }
+
+var MI_OPERATION_NULL = &MI_Operation{0, 0, nil}
