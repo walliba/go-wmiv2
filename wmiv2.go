@@ -16,8 +16,6 @@ func EnumerateAllInstances() {
 		panic("failed to init")
 	}
 
-	// defer app.Close()
-
 	if app == nil {
 		panic("MI_Application is not initialized")
 	}
@@ -46,14 +44,18 @@ func EnumerateAllInstances() {
 
 	operation := session.EnumerateInstances("root\\cimv2", "Win32_Process")
 
+	defer func() {
+		operation.Close()
+		fmt.Println("defer close operation")
+	}()
 	// if err != 0 {
 	// 	panic(fmt.Sprintf("failed to enumerate session instances: %v", err))
 	// }
 	fmt.Printf("*MI_Operation: %#x\n", &operation)
 
-	var moreResults bool
+	var moreResults bool = true
 
-	for ok := true; ok; ok = moreResults {
+	for moreResults {
 		// var instance *mi.MI_Instance
 
 		instance, err := operation.GetInstance(&moreResults)
@@ -103,5 +105,10 @@ func EnumerateAllInstances() {
 		// s = (*string)(unsafe.Pointer(&value))
 
 		// fmt.Println(s)
+		if !moreResults {
+			break
+		}
 	}
+
+	fmt.Println("Done!")
 }

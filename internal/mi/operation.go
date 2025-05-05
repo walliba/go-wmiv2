@@ -22,6 +22,12 @@ type MI_OperationFT struct {
 
 var MI_OPERATION_NULL = MI_Operation{0, 0, nil}
 
+func (operation *MI_Operation) Close() uint64 {
+	r0, _, _ := syscall.SyscallN(operation.ft.Close, uintptr(unsafe.Pointer(operation)))
+
+	return uint64(r0)
+}
+
 func (operation *MI_Operation) GetInstance(moreResults *bool) (*MI_Instance, uint64) {
 	var instance = &MI_Instance{}
 
