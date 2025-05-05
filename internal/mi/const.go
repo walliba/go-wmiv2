@@ -1,5 +1,10 @@
 package mi
 
+import (
+	"syscall"
+	"unsafe"
+)
+
 type MI_RESULT uint64
 
 const (
@@ -32,4 +37,32 @@ const (
 	MI_RESULT_SERVER_IS_SHUTTING_DOWN                              // 28
 )
 
+type MI_Value struct {
+	raw [8]byte
+}
+
+func (v *MI_Value) ToString() string {
+	ptr := *(*uintptr)(unsafe.Pointer(&v.raw[0]))
+	return UTF16PtrToString((*uint16)(unsafe.Pointer(ptr)))
+}
+
+func UTF16PtrToString(p *uint16) string {
+	if p == nil {
+		return ""
+	}
+	end := unsafe.Pointer(p)
+	n := 0
+	for *(*uint16)(end) != 0 {
+		end = unsafe.Pointer(uintptr(end) + unsafe.Sizeof(*p))
+		n++
+	}
+	return syscall.UTF16ToString(unsafe.Slice(p, n))
+}
+
 // type MI_ENUMERATION
+
+// type MI_ClassDecl struct {
+// 	flags uint32
+// 	code  uint32
+// 	name  *uint16
+// }
