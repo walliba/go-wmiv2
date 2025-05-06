@@ -39,99 +39,112 @@ type MI_InstanceFT struct {
 	GetClass        uintptr
 }
 
-func (instance *MI_Instance) Clone() {
+func (i *MI_Instance) Clone() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) Destruct() {
+func (i *MI_Instance) Destruct() Result {
+	if i != nil && i.ft != nil {
+		r0, _, _ := syscall.SyscallN(i.ft.Destruct,
+			uintptr(unsafe.Pointer(i)),
+		)
+
+		return Result(r0)
+	}
+
+	return Result(1)
+}
+
+func (i *MI_Instance) Delete() Result {
+	r0, _, _ := syscall.SyscallN(i.ft.Delete,
+		uintptr(unsafe.Pointer(i)),
+	)
+
+	return Result(r0)
+}
+
+func (i *MI_Instance) IsA() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) Delete() {
+func (i *MI_Instance) GetClassName() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) IsA() {
+func (i *MI_Instance) SetNameSpace() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) GetClassName() {
-	panic("not implemented")
+func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
+
+	var namespace *uint16
+
+	r0, _, _ := syscall.SyscallN(i.ft.GetNameSpace,
+		uintptr(unsafe.Pointer(i)),
+		uintptr(unsafe.Pointer(&namespace)),
+	)
+
+	return namespace, Result(r0)
 }
 
-func (instance *MI_Instance) SetNameSpace() {
-	panic("not implemented")
-}
+func (i *MI_Instance) GetElementCount(count *uint32) Result {
 
-func (instance *MI_Instance) GetNameSpace() {
-	panic("not implemented")
-}
-
-func (instance *MI_Instance) GetElementCount(count *uint32) uint64 {
-
-	r0, _, _ := syscall.SyscallN(instance.ft.GetElementCount,
-		uintptr(unsafe.Pointer(instance)),
+	r0, _, _ := syscall.SyscallN(i.ft.GetElementCount,
+		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(count)),
 	)
 
-	return uint64(r0)
+	return Result(r0)
 }
 
-func (instance *MI_Instance) AddElement() {
+func (i *MI_Instance) AddElement() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) SetElement() {
+func (i *MI_Instance) SetElement() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) SetElementAt() {
+func (i *MI_Instance) SetElementAt() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) GetElement(name string, value *MI_Value) uint64 {
-
-	// var value uintptr
+func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 
 	n, _ := syscall.UTF16PtrFromString(name)
-	// n, err := syscall.UTF16FromString(name)
 
-	// if err != nil {
-	// 	panic("error on utf16 conversion")
-	// }
-
-	r0, _, _ := syscall.SyscallN(instance.ft.GetElement,
-		uintptr(unsafe.Pointer(instance)),
+	r0, _, _ := syscall.SyscallN(i.ft.GetElement,
+		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(n)),
-		uintptr(unsafe.Pointer(value)),
-		0,
-		0,
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(t)),
+		uintptr(unsafe.Pointer(f)),
 		0,
 	)
 
-	return uint64(r0)
+	return Result(r0)
 }
 
-func (instance *MI_Instance) GetElementAt() {
+func (i *MI_Instance) GetElementAt() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) ClearElement() {
+func (i *MI_Instance) ClearElement() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) ClearElementAt() {
+func (i *MI_Instance) ClearElementAt() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) GetServerName() {
+func (i *MI_Instance) GetServerName() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) SetServerName() {
+func (i *MI_Instance) SetServerName() {
 	panic("not implemented")
 }
 
-func (instance *MI_Instance) GetClass() {
+func (i *MI_Instance) GetClass() {
 	panic("not implemented")
 }
