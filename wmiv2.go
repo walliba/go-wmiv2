@@ -3,6 +3,8 @@ package wmiv2
 import (
 	"fmt"
 
+	"golang.org/x/sys/windows"
+
 	"github.com/walliba/go-wmiv2/internal/mi"
 )
 
@@ -180,22 +182,40 @@ func Query(query string) {
 		// fmt.Println(windows.UTF16PtrToString(namespace))
 
 		if instance != nil {
-			// MI_Value value;
-			var value mi.Value
-			// MI_Type type;
-			var vType mi.Type
-			// MI_Uint32 flags;
-			var flags mi.Flag
 			// MI_UInt32 index;
 			// var index uint32
+			var eCount uint32
 
-			err := instance.GetElement("Name", &value, &vType, &flags)
+			err := instance.GetElementCount(&eCount)
 
 			if err != mi.RESULT_OK {
-				return
+				fmt.Println("error getting element count")
 			}
 
-			fmt.Println(value.As(&vType))
+			for i := uint32(0); i < eCount; i++ {
+				// MI_Value value;
+				var value mi.Value
+				// MI_Type type;
+				var vType mi.Type
+				// MI_Uint32 flags;
+				var flags mi.Flag
+
+				// BUG: flip flopping i index
+				name, err := instance.GetElementAt(i, &value, &vType, &flags)
+
+				if flags&mi.FLAG_NULL != 0 {
+					continue
+				}
+
+				if err != mi.RESULT_OK {
+					fmt.Printf("error %d: getting element at index: %d\n", err, i)
+				}
+
+				fmt.Println(windows.UTF16PtrToString(name))
+
+				// fmt.Printf("%v", value.As(&vType))
+
+			}
 		}
 	}
 

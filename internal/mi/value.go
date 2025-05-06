@@ -29,7 +29,10 @@ func (v *Value) As(t *Type) any {
 	case MI_SINT32:
 		return *(*int32)(unsafe.Pointer(&v.raw))
 	case MI_STRING:
-		return windows.UTF16PtrToString((*uint16)(*(*unsafe.Pointer)(unsafe.Pointer(&v.raw[0]))))
+		ptr := *(*unsafe.Pointer)(unsafe.Pointer(&v.raw[0]))
+		if ptr != nil {
+			return windows.UTF16PtrToString((*uint16)(ptr))
+		}
 	}
 
 	return nil

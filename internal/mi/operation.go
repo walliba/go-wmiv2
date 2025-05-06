@@ -43,7 +43,8 @@ func (o *MI_Operation) GetSession() {
 	panic("not implemented")
 }
 
-func (o *MI_Operation) GetInstance(moreResults *bool) (*MI_Instance, Result) {
+// Calling MI_Operation_Close before retrieving the last result where moreResults is set to MI_FALSE will cause the MI_Operation_Close function to stop responding.
+func (o *MI_Operation) GetInstance(moreResults *bool, args ...any) (*MI_Instance, Result) {
 	var instance = &MI_Instance{}
 
 	r0, _, _ := syscall.SyscallN(o.ft.GetInstance,

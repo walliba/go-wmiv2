@@ -88,7 +88,6 @@ func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
 }
 
 func (i *MI_Instance) GetElementCount(count *uint32) Result {
-
 	r0, _, _ := syscall.SyscallN(i.ft.GetElementCount,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(count)),
@@ -125,8 +124,19 @@ func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result
 	return Result(r0)
 }
 
-func (i *MI_Instance) GetElementAt() {
-	panic("not implemented")
+func (i *MI_Instance) GetElementAt(idx uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
+	var name *uint16
+
+	r0, _, _ := syscall.SyscallN(i.ft.GetElementAt,
+		uintptr(unsafe.Pointer(i)),
+		uintptr(idx),
+		uintptr(unsafe.Pointer(&name)),
+		uintptr(unsafe.Pointer(v)),
+		uintptr(unsafe.Pointer(t)),
+		uintptr(unsafe.Pointer(f)),
+	)
+
+	return name, Result(r0)
 }
 
 func (i *MI_Instance) ClearElement() {
