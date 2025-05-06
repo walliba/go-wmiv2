@@ -13,10 +13,10 @@ type MI_Instance struct {
 	reserved   [4]int64
 }
 
-// type MI_InstanceExFT struct {
-// 	parent    MI_InstanceFT
-// 	Normalize uintptr
-// }
+type MI_InstanceExFT struct {
+	parent    MI_InstanceFT
+	Normalize uintptr
+}
 
 type MI_InstanceFT struct {
 	Clone           uintptr
@@ -39,11 +39,55 @@ type MI_InstanceFT struct {
 	GetClass        uintptr
 }
 
-// func (instance *MI_Instance) Dump() string {
-// 	s := syscall.UTF16ToString(([]uint16)(instance.serverName))
+func (instance *MI_Instance) Clone() {
+	panic("not implemented")
+}
 
-// 	return s
-// }
+func (instance *MI_Instance) Destruct() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) Delete() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) IsA() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) GetClassName() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) SetNameSpace() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) GetNameSpace() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) GetElementCount(count *uint32) uint64 {
+
+	r0, _, _ := syscall.SyscallN(instance.ft.GetElementCount,
+		uintptr(unsafe.Pointer(instance)),
+		uintptr(unsafe.Pointer(count)),
+	)
+
+	return uint64(r0)
+}
+
+func (instance *MI_Instance) AddElement() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) SetElement() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) SetElementAt() {
+	panic("not implemented")
+}
 
 func (instance *MI_Instance) GetElement(name string, value *MI_Value) uint64 {
 
@@ -68,12 +112,26 @@ func (instance *MI_Instance) GetElement(name string, value *MI_Value) uint64 {
 	return uint64(r0)
 }
 
-func (instance *MI_Instance) GetElementCount(count *uint32) uint64 {
+func (instance *MI_Instance) GetElementAt() {
+	panic("not implemented")
+}
 
-	r0, _, _ := syscall.SyscallN(instance.ft.GetElementCount,
-		uintptr(unsafe.Pointer(instance)),
-		uintptr(unsafe.Pointer(count)),
-	)
+func (instance *MI_Instance) ClearElement() {
+	panic("not implemented")
+}
 
-	return uint64(r0)
+func (instance *MI_Instance) ClearElementAt() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) GetServerName() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) SetServerName() {
+	panic("not implemented")
+}
+
+func (instance *MI_Instance) GetClass() {
+	panic("not implemented")
 }
