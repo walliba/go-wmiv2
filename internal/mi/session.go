@@ -3,6 +3,8 @@ package mi
 import (
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 type MI_Session struct {
@@ -29,14 +31,35 @@ type MI_SessionFT struct {
 	TestConnection      uintptr
 }
 
-func (session *MI_Session) Close() uint64 {
-
-	r0, _, _ := syscall.SyscallN(session.ft.Close, uintptr(unsafe.Pointer(session)), 0, uintptr(0))
-
-	return uint64(r0)
+func (s *MI_Session) Close() Result {
+	r0, _, _ := syscall.SyscallN(s.ft.Close, uintptr(unsafe.Pointer(s)), 0, uintptr(0))
+	return Result(r0)
 }
 
-func (session *MI_Session) EnumerateInstances(namespace string, class string) *MI_Operation {
+func (s *MI_Session) QueryInstances(namespace string, query string) *MI_Operation {
+
+	ns, _ := windows.UTF16PtrFromString(namespace)
+	d, _ := syscall.UTF16PtrFromString("WQL")
+	q, _ := syscall.UTF16PtrFromString(query)
+
+	var miOperation = MI_OPERATION_NULL
+
+	_, _, _ = syscall.SyscallN(s.ft.QueryInstances,
+		uintptr(unsafe.Pointer(s)),            // Session
+		0,                                     // Flags
+		uintptr(0),                            // Options
+		uintptr(unsafe.Pointer(ns)),           // CIM Namespace
+		uintptr(unsafe.Pointer(d)),            // Query dialect
+		uintptr(unsafe.Pointer(q)),            // Query string
+		0,                                     // Callbacks
+		uintptr(unsafe.Pointer(&miOperation)), // Operation
+	)
+
+	return &miOperation
+
+}
+
+func (s *MI_Session) EnumerateInstances(namespace string, class string) *MI_Operation {
 	// var namespace = "root\\cimv2"
 	// var class = "Win32_Process"
 
@@ -45,8 +68,8 @@ func (session *MI_Session) EnumerateInstances(namespace string, class string) *M
 
 	var miOperation = MI_OPERATION_NULL
 
-	_, _, _ = syscall.SyscallN(session.ft.EnumerateInstances,
-		uintptr(unsafe.Pointer(session)),
+	_, _, _ = syscall.SyscallN(s.ft.EnumerateInstances,
+		uintptr(unsafe.Pointer(s)),
 		0,
 		0,
 		uintptr(unsafe.Pointer(ns)),

@@ -22,27 +22,32 @@ type MI_OperationFT struct {
 
 var MI_OPERATION_NULL = MI_Operation{0, 0, nil}
 
-func (operation *MI_Operation) Close() uint64 {
-	r0, _, _ := syscall.SyscallN(operation.ft.Close,
-		uintptr(unsafe.Pointer(operation)), // [in, out] MI_Operation *operation
+func (o *MI_Operation) Close() Result {
+	r0, _, _ := syscall.SyscallN(o.ft.Close,
+		uintptr(unsafe.Pointer(o)), // [in, out] MI_Operation *operation
 	)
 
-	return uint64(r0)
+	return Result(r0)
 }
 
-func (operation *MI_Operation) Cancel() {
+func (o *MI_Operation) Cancel() Result {
+	r0, _, _ := syscall.SyscallN(o.ft.Cancel,
+		uintptr(unsafe.Pointer(o)),
+		0,
+	)
+
+	return Result(r0)
+}
+
+func (o *MI_Operation) GetSession() {
 	panic("not implemented")
 }
 
-func (operation *MI_Operation) GetSession() {
-	panic("not implemented")
-}
-
-func (operation *MI_Operation) GetInstance(moreResults *bool) (*MI_Instance, uint64) {
+func (o *MI_Operation) GetInstance(moreResults *bool) (*MI_Instance, Result) {
 	var instance = &MI_Instance{}
 
-	r0, _, _ := syscall.SyscallN(operation.ft.GetInstance,
-		uintptr(unsafe.Pointer(operation)),   // [in] 				MI_Operation		*operation
+	r0, _, _ := syscall.SyscallN(o.ft.GetInstance,
+		uintptr(unsafe.Pointer(o)),           // [in] 				MI_Operation		*operation
 		uintptr(unsafe.Pointer(&instance)),   // 					const MI_Instance	**instance
 		uintptr(unsafe.Pointer(moreResults)), // [out, optional] 	MI_Boolean 			*moreResults
 		0,                                    // [out, optional] 	MI_Result			*result
@@ -50,13 +55,13 @@ func (operation *MI_Operation) GetInstance(moreResults *bool) (*MI_Instance, uin
 		0,                                    // 					const MI_Instance	**completionDetails
 	)
 
-	return instance, uint64(r0)
+	return instance, Result(r0)
 }
 
-func (operation *MI_Operation) GetIndication() {
+func (o *MI_Operation) GetIndication() {
 	panic("not implemented")
 }
 
-func (operation *MI_Operation) GetClass() {
+func (o *MI_Operation) GetClass() {
 	panic("not implemented")
 }

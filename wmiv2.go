@@ -20,11 +20,12 @@ func EnumerateAllInstances() {
 		panic("MI_Application is not initialized")
 	}
 
-	fmt.Printf("*MI_Application: %#x\n", &app)
+	// fmt.Printf("*MI_Application: %#x\n", &app)
 
 	defer func() {
-		app.Close()
-		fmt.Println("defer close app")
+		if err := app.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Application handle")
+		}
 	}()
 
 	session, err := app.NewSession()
@@ -34,28 +35,32 @@ func EnumerateAllInstances() {
 	}
 
 	defer func() {
-		session.Close()
-		fmt.Println("defer close session")
+		if err := session.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Session handle")
+		}
 	}()
 
-	fmt.Printf("*MI_Session: %#x\n", &session)
+	// fmt.Printf("*MI_Session: %#x\n", &session)
 
 	// var miOperation
 
 	operation := session.EnumerateInstances("root\\cimv2", "Win32_Process")
 
 	defer func() {
-		operation.Close()
-		fmt.Println("defer close operation")
+		if err := operation.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Operation handle")
+		}
 	}()
 	// if err != 0 {
 	// 	panic(fmt.Sprintf("failed to enumerate session instances: %v", err))
 	// }
-	fmt.Printf("*MI_Operation: %#x\n", &operation)
+	// fmt.Printf("*MI_Operation: %#x\n", &operation)
 
-	var moreResults bool = true
+	// var moreResults bool = true
 
-	for moreResults {
+	var instanceCount uint32 = 0
+
+	for moreResults := true; moreResults; {
 		// var instance *mi.MI_Instance
 
 		instance, err := operation.GetInstance(&moreResults)
@@ -69,19 +74,25 @@ func EnumerateAllInstances() {
 
 		if instance != nil {
 			// MI_Value value;
+			var value mi.Value
 			// MI_Type type;
+			var vType mi.Type
 			// MI_Uint32 flags;
-			// var count uint32
+			var flags mi.Flag
+			// MI_UInt32 index;
+			// var index uint32
 
-			var value mi.MI_Value
+			err := instance.GetElement("Name", &value, &vType, &flags)
 
-			err := instance.GetElement("Name", &value)
-
-			if err != 0 {
+			if err != mi.RESULT_OK {
 				return
 			}
 
-			fmt.Println(value.ToString())
+			fmt.Println(value.As(&vType))
+
+			// fmt.Println(flags.HasFlag(mi.FLAG_READONLY))
+			// fmt.Println(flags.GetFlags())
+			// fmt.Println(mi.ListSetFlags(flags))
 			// err := instance.GetElementCount(&count)
 
 			// if err != 0 {
@@ -92,7 +103,7 @@ func EnumerateAllInstances() {
 			// fmt.Println(count)
 
 		}
-
+		instanceCount++
 		// value, err := instance.GetElement()
 
 		// if err != 0 {
@@ -110,5 +121,82 @@ func EnumerateAllInstances() {
 		}
 	}
 
-	fmt.Println("Done!")
+	fmt.Printf("Done: %d\n", instanceCount)
+}
+
+func Query(query string) {
+	app, err := mi.MI_Application_Initialize()
+
+	if err != 0 {
+		panic("failed to init")
+	}
+
+	if app == nil {
+		panic("MI_Application is not initialized")
+	}
+
+	defer func() {
+		if err := app.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Application handle")
+		}
+	}()
+
+	session, err := app.NewSession()
+
+	if err != 0 {
+		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
+	}
+
+	defer func() {
+		if err := session.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Session handle")
+		}
+	}()
+
+	operation := session.QueryInstances("root\\cimv2", query)
+
+	defer func() {
+		if err := operation.Close(); err != mi.RESULT_OK {
+			panic("Failed to close MI_Operation handle")
+		}
+	}()
+
+	for moreResults := true; moreResults; {
+
+		instance, err := operation.GetInstance(&moreResults)
+
+		if err != 0 {
+			fmt.Println("failed on operation->GetInstance")
+			continue
+		}
+
+		// namespace, err := instance.GetNameSpace()
+
+		// if err != mi.RESULT_OK {
+		// 	fmt.Println("failed on instance->GetNameSpace")
+		// 	break
+		// }
+
+		// fmt.Println(windows.UTF16PtrToString(namespace))
+
+		if instance != nil {
+			// MI_Value value;
+			var value mi.Value
+			// MI_Type type;
+			var vType mi.Type
+			// MI_Uint32 flags;
+			var flags mi.Flag
+			// MI_UInt32 index;
+			// var index uint32
+
+			err := instance.GetElement("Name", &value, &vType, &flags)
+
+			if err != mi.RESULT_OK {
+				return
+			}
+
+			fmt.Println(value.As(&vType))
+		}
+	}
+
 }

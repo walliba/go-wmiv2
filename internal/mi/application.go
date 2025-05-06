@@ -5,6 +5,7 @@ import (
 	"unsafe"
 )
 
+// _MI_Application
 type MI_Application struct {
 	reserved1 uint64
 	reserved2 int64
@@ -25,28 +26,34 @@ type MI_ApplicationFT struct {
 	NewClass                       uintptr
 }
 
-// func (app *MI_Application) Initialize() MI_RESULT {
+func (app *MI_Application) Close() Result {
+	r0, _, _ := syscall.SyscallN(app.ft.Close, uintptr(unsafe.Pointer(app)))
 
-// 	r0, _, _ := procMIApplicationInitialize.Call(
-// 		uintptr(0), 0, 0, uintptr(unsafe.Pointer(&app)),
-// 	)
+	return Result(r0)
+}
 
-// 	return MI_RESULT(r0)
-// }
+func (app *MI_Application) NewSession() (*MI_Session, Result) {
+	session := &MI_Session{}
 
-// func MI_Application_NewSession()
+	r0, _, _ := syscall.SyscallN(app.ft.NewSession, uintptr(unsafe.Pointer(app)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(session)))
 
-// func (mi *MI) Initialize() MI_RESULT {
-// 	app, hresult := MI_Application_Initialize()
-// }
+	return session, Result(r0)
+}
 
-// DEBUG: REMOVE BEFORE RELEASE
-func (app *MI_Application) GetFt() *MI_ApplicationFT {
-	return app.ft
+func (app *MI_Application) NewHostedProvider() {
+	panic("not implemented")
+}
+
+func (app *MI_Application) NewInstance() {
+	panic("not implemented")
+}
+
+func (app *MI_Application) NewDestinationOptions() {
+	panic("not implemented")
 }
 
 // TODO: Convert to app.Initialize()
-func MI_Application_Initialize() (*MI_Application, uint64) {
+func MI_Application_Initialize() (*MI_Application, Result) {
 	flags := uint32(0)
 
 	application := &MI_Application{}
@@ -55,27 +62,5 @@ func MI_Application_Initialize() (*MI_Application, uint64) {
 		uintptr(flags), 0, 0, uintptr(unsafe.Pointer(application)),
 	)
 
-	return application, uint64(r0)
-}
-
-func (app *MI_Application) Close() uint64 {
-	if app.ft == nil || app.ft.Close == 0 {
-		return 1
-	}
-
-	r0, _, _ := syscall.SyscallN(app.ft.Close, uintptr(unsafe.Pointer(app)))
-
-	return uint64(r0)
-}
-
-func (app *MI_Application) NewSession() (*MI_Session, uint64) {
-	if app.ft == nil || app.ft.Close == 0 {
-		return nil, 1
-	}
-
-	session := &MI_Session{}
-
-	r0, _, _ := syscall.SyscallN(app.ft.NewSession, uintptr(unsafe.Pointer(app)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(session)))
-
-	return session, uint64(r0)
+	return application, Result(r0)
 }
