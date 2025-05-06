@@ -42,8 +42,8 @@ type MI_Value struct {
 }
 
 func (v *MI_Value) ToString() string {
-	ptr := *(*uintptr)(unsafe.Pointer(&v.raw[0]))
-	return UTF16PtrToString((*uint16)(unsafe.Pointer(ptr)))
+	ptr := *(*unsafe.Pointer)(unsafe.Pointer(&v.raw[0]))
+	return UTF16PtrToString((*uint16)(ptr))
 }
 
 func UTF16PtrToString(p *uint16) string {
