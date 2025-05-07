@@ -32,8 +32,8 @@ func (app *Application) Close() Result {
 	return Result(r0)
 }
 
-func (app *Application) NewSession() (*MI_Session, Result) {
-	session := &MI_Session{}
+func (app *Application) NewSession() (*Session, Result) {
+	session := &Session{}
 
 	r0, _, _ := syscall.SyscallN(app.ft.NewSession, uintptr(unsafe.Pointer(app)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(session)))
 

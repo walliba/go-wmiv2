@@ -7,13 +7,13 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-type MI_Session struct {
+type Session struct {
 	reserved1 uint64
 	reserved2 int64 // ptrdiff_t
-	ft        *MI_SessionFT
+	ft        *SessionFT
 }
 
-type MI_SessionFT struct {
+type SessionFT struct {
 	Close               uintptr
 	GetApplication      uintptr
 	GetInstance         uintptr
@@ -31,12 +31,12 @@ type MI_SessionFT struct {
 	TestConnection      uintptr
 }
 
-func (s *MI_Session) Close() Result {
+func (s *Session) Close() Result {
 	r0, _, _ := syscall.SyscallN(s.ft.Close, uintptr(unsafe.Pointer(s)), 0, uintptr(0))
 	return Result(r0)
 }
 
-func (s *MI_Session) QueryInstances(namespace string, query string) *Operation {
+func (s *Session) QueryInstances(namespace string, query string) *Operation {
 
 	ns, _ := windows.UTF16PtrFromString(namespace)
 	d, _ := syscall.UTF16PtrFromString("WQL")
@@ -59,7 +59,7 @@ func (s *MI_Session) QueryInstances(namespace string, query string) *Operation {
 
 }
 
-func (s *MI_Session) EnumerateInstances(namespace string, class string) *Operation {
+func (s *Session) EnumerateInstances(namespace string, class string) *Operation {
 	// var namespace = "root\\cimv2"
 	// var class = "Win32_Process"
 
