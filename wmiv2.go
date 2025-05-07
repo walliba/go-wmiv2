@@ -141,7 +141,7 @@ func (c *Client) EnumerateAllInstances() {
 	fmt.Printf("Done: %d\n", instanceCount)
 }
 
-func (c *Client) Query(query string) map[string]any {
+func (c *Client) Query(query string) []map[string]any {
 	session, err := c.app.NewSession()
 
 	if err != mi.RESULT_OK {
@@ -164,8 +164,8 @@ func (c *Client) Query(query string) map[string]any {
 
 	// NOTE: not safe for concurrent use
 	// NOTE: must be an []map[string]any or better for multiple instances
-	result := make(map[string]any)
-
+	result := make([]map[string]any, 0)
+	instanceCount := 0
 	for moreResults := true; moreResults; {
 
 		instance, err := operation.GetInstance(&moreResults)
@@ -176,6 +176,10 @@ func (c *Client) Query(query string) map[string]any {
 		}
 
 		if instance != nil {
+			instanceCount++
+			instanceMap := make(map[string]any)
+			result = append(result, instanceMap)
+
 			var elementCount uint32
 
 			err := instance.GetElementCount(&elementCount)
@@ -203,13 +207,13 @@ func (c *Client) Query(query string) map[string]any {
 				if flags.HasFlag(mi.FLAG_NULL) {
 					// fmt.Fprintf(os.Stdout, "%s: <NULL>\n", windows.UTF16PtrToString(name))
 					key := windows.UTF16PtrToString(name)
-					result[key] = nil
+					instanceMap[key] = nil
 					continue
 				}
 
 				// fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
 				key := windows.UTF16PtrToString(name)
-				result[key] = value.As(*vType)
+				instanceMap[key] = value.As(*vType)
 			}
 		}
 	}
