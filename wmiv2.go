@@ -205,9 +205,9 @@ func (c *Client) Query(query string) []map[string]any {
 				}
 
 				if flags.HasFlag(mi.FLAG_NULL) {
-					// fmt.Fprintf(os.Stdout, "%s: <NULL>\n", windows.UTF16PtrToString(name))
-					key := windows.UTF16PtrToString(name)
-					instanceMap[key] = nil
+					// Omitting this results in a smaller slice, and still allows for indexing into the result map (returns nil)
+					// key := windows.UTF16PtrToString(name)
+					// instanceMap[key] = nil
 					continue
 				}
 
