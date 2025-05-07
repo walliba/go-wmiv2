@@ -1,39 +1,45 @@
 package mi
 
 import (
+	"fmt"
+	"os"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
 
 type Value struct {
-	raw [8]byte
+	raw *int64
 }
 
-func (v *Value) As(t *Type) any {
-
-	// fmt.Printf("parsing value as type: %d\n", *t)
-	switch *t {
+func (v *Value) As(t Type) any {
+	switch t {
 	case MI_BOOLEAN:
-		return *(*bool)(unsafe.Pointer(&v.raw))
+		return *(*bool)(v.GetPointer())
 	case MI_UINT8:
-		return *(*uint8)(unsafe.Pointer(&v.raw))
+		return *(*uint8)(v.GetPointer())
 	case MI_SINT8:
-		return *(*int8)(unsafe.Pointer(&v.raw))
+		return *(*int8)(v.GetPointer())
 	case MI_UINT16:
-		return *(*uint16)(unsafe.Pointer(&v.raw))
+		return *(*uint16)(v.GetPointer())
 	case MI_SINT16:
-		return *(*int16)(unsafe.Pointer(&v.raw))
+		return *(*int16)(v.GetPointer())
 	case MI_UINT32:
-		return *(*uint32)(unsafe.Pointer(&v.raw))
+		return *(*uint32)(v.GetPointer())
 	case MI_SINT32:
-		return *(*int32)(unsafe.Pointer(&v.raw))
+		return *(*int32)(v.GetPointer())
 	case MI_STRING:
-		ptr := *(*unsafe.Pointer)(unsafe.Pointer(&v.raw[0]))
+		ptr := v.GetPointer()
 		if ptr != nil {
-			return windows.UTF16PtrToString((*uint16)(ptr))
+			return windows.UTF16PtrToString((*uint16)(*(*unsafe.Pointer)(ptr)))
 		}
+	default:
+		fmt.Fprintf(os.Stderr, "<unsupported type: %d>", t)
 	}
 
 	return nil
+}
+
+func (v *Value) GetPointer() unsafe.Pointer {
+	return unsafe.Pointer(&v.raw)
 }

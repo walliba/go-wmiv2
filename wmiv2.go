@@ -90,7 +90,7 @@ func EnumerateAllInstances() {
 				return
 			}
 
-			fmt.Println(value.As(&vType))
+			fmt.Println(value.As(vType))
 
 			// fmt.Println(flags.HasFlag(mi.FLAG_READONLY))
 			// fmt.Println(flags.GetFlags())
@@ -194,16 +194,16 @@ func Query(query string) {
 
 			for i := uint32(0); i < eCount; i++ {
 				// MI_Value value;
-				var value mi.Value
+				value := &mi.Value{}
 				// MI_Type type;
 				var vType mi.Type
 				// MI_Uint32 flags;
 				var flags mi.Flag
 
 				// BUG: flip flopping i index
-				name, err := instance.GetElementAt(i, &value, &vType, &flags)
+				name, err := instance.GetElementAt(i, value, &vType, &flags)
 
-				if flags&mi.FLAG_NULL != 0 {
+				if flags.HasFlag(mi.FLAG_NULL) {
 					continue
 				}
 
