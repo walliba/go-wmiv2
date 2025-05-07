@@ -5,20 +5,20 @@ import (
 	"unsafe"
 )
 
-type MI_Instance struct {
-	ft         *MI_InstanceFT
+type Instance struct {
+	ft         *InstanceFT
 	classDecl  uintptr
 	serverName uintptr
 	nameSpace  uintptr
 	reserved   [4]int64
 }
 
-type MI_InstanceExFT struct {
-	parent    MI_InstanceFT
+type InstanceExFT struct {
+	parent    InstanceFT
 	Normalize uintptr
 }
 
-type MI_InstanceFT struct {
+type InstanceFT struct {
 	Clone           uintptr
 	Destruct        uintptr
 	Delete          uintptr
@@ -39,15 +39,15 @@ type MI_InstanceFT struct {
 	GetClass        uintptr
 }
 
-func (i *MI_Instance) isValid() bool {
+func (i *Instance) isValid() bool {
 	return i != nil && i.ft != nil
 }
 
-func (i *MI_Instance) Clone() {
+func (i *Instance) Clone() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) Destruct() Result {
+func (i *Instance) Destruct() Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
 	}
@@ -59,7 +59,7 @@ func (i *MI_Instance) Destruct() Result {
 	return Result(r0)
 }
 
-func (i *MI_Instance) Delete() Result {
+func (i *Instance) Delete() Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
 	}
@@ -71,19 +71,19 @@ func (i *MI_Instance) Delete() Result {
 	return Result(r0)
 }
 
-func (i *MI_Instance) IsA() {
+func (i *Instance) IsA() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) GetClassName() {
+func (i *Instance) GetClassName() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) SetNameSpace() {
+func (i *Instance) SetNameSpace() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
+func (i *Instance) GetNameSpace() (*uint16, Result) {
 	if !i.isValid() {
 		return nil, RESULT_INVALID_PARAMETER
 	}
@@ -98,7 +98,7 @@ func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
 	return namespace, Result(r0)
 }
 
-func (i *MI_Instance) GetElementCount(count *uint32) Result {
+func (i *Instance) GetElementCount(count *uint32) Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
 	}
@@ -111,20 +111,20 @@ func (i *MI_Instance) GetElementCount(count *uint32) Result {
 	return Result(r0)
 }
 
-func (i *MI_Instance) AddElement() {
+func (i *Instance) AddElement() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) SetElement() {
+func (i *Instance) SetElement() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) SetElementAt() {
+func (i *Instance) SetElementAt() {
 	panic("not implemented")
 }
 
 // Gets the value of the property with the given name.
-func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
+func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
 	}
@@ -145,7 +145,7 @@ func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result
 }
 
 // Get the value of the property at the given index.
-func (i *MI_Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
+func (i *Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
 	if !i.isValid() {
 		return nil, RESULT_INVALID_PARAMETER
 	}
@@ -164,22 +164,22 @@ func (i *MI_Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*ui
 	return name, Result(r0)
 }
 
-func (i *MI_Instance) ClearElement() {
+func (i *Instance) ClearElement() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) ClearElementAt() {
+func (i *Instance) ClearElementAt() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) GetServerName() {
+func (i *Instance) GetServerName() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) SetServerName() {
+func (i *Instance) SetServerName() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) GetClass() {
+func (i *Instance) GetClass() {
 	panic("not implemented")
 }
