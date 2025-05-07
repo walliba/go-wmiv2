@@ -2,35 +2,50 @@ package wmiv2
 
 import (
 	"fmt"
-
-	"golang.org/x/sys/windows"
+	"os"
+	"sync"
 
 	"github.com/walliba/go-wmiv2/internal/mi"
+	"golang.org/x/sys/windows"
 )
+
+type Client struct {
+	IsInitialized bool
+	app           *mi.Application
+}
+
+var instance *Client
+var once sync.Once
+
+func GetClient() *Client {
+	once.Do(func() {
+		app, err := mi.MI_Application_Initialize()
+
+		if err != mi.RESULT_OK {
+			panic("error initializing MI client")
+		}
+
+		if app == nil {
+			panic("MI_Application instance is null")
+		}
+
+		instance = &Client{true, app}
+	})
+
+	return instance
+}
+
+func (c *Client) Close() {
+	if err := c.app.Close(); err != mi.RESULT_OK {
+		panic("Failed to close MI_Application handle")
+	}
+}
 
 // .Description
 // This will be (eventually) the abstraction layer to make using the API more go-like
 
-func EnumerateAllInstances() {
-	app, err := mi.MI_Application_Initialize()
-
-	if err != 0 {
-		panic("failed to init")
-	}
-
-	if app == nil {
-		panic("MI_Application is not initialized")
-	}
-
-	// fmt.Printf("*MI_Application: %#x\n", &app)
-
-	defer func() {
-		if err := app.Close(); err != mi.RESULT_OK {
-			panic("Failed to close MI_Application handle")
-		}
-	}()
-
-	session, err := app.NewSession()
+func (c *Client) EnumerateAllInstances() {
+	session, err := c.app.NewSession()
 
 	if err != 0 {
 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
@@ -126,24 +141,8 @@ func EnumerateAllInstances() {
 	fmt.Printf("Done: %d\n", instanceCount)
 }
 
-func Query(query string) {
-	app, err := mi.MI_Application_Initialize()
-
-	if err != 0 {
-		panic("failed to init")
-	}
-
-	if app == nil {
-		panic("MI_Application is not initialized")
-	}
-
-	defer func() {
-		if err := app.Close(); err != mi.RESULT_OK {
-			panic("Failed to close MI_Application handle")
-		}
-	}()
-
-	session, err := app.NewSession()
+func (c *Client) Query(query string) {
+	session, err := c.app.NewSession()
 
 	if err != 0 {
 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
@@ -200,7 +199,6 @@ func Query(query string) {
 				// MI_Uint32 flags;
 				var flags mi.Flag
 
-				// BUG: flip flopping i index
 				name, err := instance.GetElementAt(i, value, &vType, &flags)
 
 				if flags.HasFlag(mi.FLAG_NULL) {
@@ -211,10 +209,7 @@ func Query(query string) {
 					fmt.Printf("error %d: getting element at index: %d\n", err, i)
 				}
 
-				fmt.Println(windows.UTF16PtrToString(name))
-
-				// fmt.Printf("%v", value.As(&vType))
-
+				fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(vType))
 			}
 		}
 	}
