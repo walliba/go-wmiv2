@@ -36,7 +36,7 @@ func (s *MI_Session) Close() Result {
 	return Result(r0)
 }
 
-func (s *MI_Session) QueryInstances(namespace string, query string) *MI_Operation {
+func (s *MI_Session) QueryInstances(namespace string, query string) *Operation {
 
 	ns, _ := windows.UTF16PtrFromString(namespace)
 	d, _ := syscall.UTF16PtrFromString("WQL")
@@ -59,7 +59,7 @@ func (s *MI_Session) QueryInstances(namespace string, query string) *MI_Operatio
 
 }
 
-func (s *MI_Session) EnumerateInstances(namespace string, class string) *MI_Operation {
+func (s *MI_Session) EnumerateInstances(namespace string, class string) *Operation {
 	// var namespace = "root\\cimv2"
 	// var class = "Win32_Process"
 

@@ -5,13 +5,13 @@ import (
 	"unsafe"
 )
 
-type MI_Operation struct {
+type Operation struct {
 	reserved1 uint64
 	reserved2 int64 // ptrdiff_t
-	ft        *MI_OperationFT
+	ft        *OperationFT
 }
 
-type MI_OperationFT struct {
+type OperationFT struct {
 	Close         uintptr
 	Cancel        uintptr
 	GetSession    uintptr
@@ -20,9 +20,9 @@ type MI_OperationFT struct {
 	GetClass      uintptr
 }
 
-var MI_OPERATION_NULL = MI_Operation{0, 0, nil}
+var MI_OPERATION_NULL = Operation{0, 0, nil}
 
-func (o *MI_Operation) Close() Result {
+func (o *Operation) Close() Result {
 	r0, _, _ := syscall.SyscallN(o.ft.Close,
 		uintptr(unsafe.Pointer(o)), // [in, out] MI_Operation *operation
 	)
@@ -30,7 +30,7 @@ func (o *MI_Operation) Close() Result {
 	return Result(r0)
 }
 
-func (o *MI_Operation) Cancel() Result {
+func (o *Operation) Cancel() Result {
 	r0, _, _ := syscall.SyscallN(o.ft.Cancel,
 		uintptr(unsafe.Pointer(o)),
 		0,
@@ -39,12 +39,12 @@ func (o *MI_Operation) Cancel() Result {
 	return Result(r0)
 }
 
-func (o *MI_Operation) GetSession() {
+func (o *Operation) GetSession() {
 	panic("not implemented")
 }
 
 // Calling MI_Operation_Close before retrieving the last result where moreResults is set to MI_FALSE will cause the MI_Operation_Close function to stop responding.
-func (o *MI_Operation) GetInstance(moreResults *bool, args ...any) (*Instance, Result) {
+func (o *Operation) GetInstance(moreResults *bool, args ...any) (*Instance, Result) {
 	var instance = &Instance{}
 
 	r0, _, _ := syscall.SyscallN(o.ft.GetInstance,
@@ -59,10 +59,10 @@ func (o *MI_Operation) GetInstance(moreResults *bool, args ...any) (*Instance, R
 	return instance, Result(r0)
 }
 
-func (o *MI_Operation) GetIndication() {
+func (o *Operation) GetIndication() {
 	panic("not implemented")
 }
 
-func (o *MI_Operation) GetClass() {
+func (o *Operation) GetClass() {
 	panic("not implemented")
 }
