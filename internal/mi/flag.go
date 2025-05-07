@@ -3,35 +3,35 @@ package mi
 type Flag uint32
 
 const (
-	FLAG_CLASS           Flag = 1 << 0 // CIM meta types (or qualifier scopes)
-	FLAG_METHOD          Flag = 1 << 1
-	FLAG_PROPERTY        Flag = 1 << 2
-	FLAG_PARAMETER       Flag = 1 << 3
-	FLAG_ASSOCIATION     Flag = 1 << 4
-	FLAG_INDICATION      Flag = 1 << 5
-	FLAG_REFERENCE       Flag = 1 << 6
-	FLAG_ANY             Flag = FLAG_CLASS | FLAG_METHOD | FLAG_PROPERTY | FLAG_PARAMETER | FLAG_ASSOCIATION | FLAG_INDICATION | FLAG_REFERENCE
-	FLAG_ENABLEOVERRIDE  Flag = 1 << 7 // Qualifier flavors
-	FLAG_DISABLEOVERRIDE Flag = 1 << 8
-	FLAG_RESTRICTED      Flag = 1 << 9
-	FLAG_TOSUBCLASS      Flag = 1 << 10
-	FLAG_TRANSLATABLE    Flag = 1 << 11
-	FLAG_KEY             Flag = 1 << 12 // Select boolean qualifier
-	FLAG_IN              Flag = 1 << 13
-	FLAG_OUT             Flag = 1 << 14
-	FLAG_REQUIRED        Flag = 1 << 15
-	FLAG_STATIC          Flag = 1 << 16
-	FLAG_ABSTRACT        Flag = 1 << 17
-	FLAG_TERMINAL        Flag = 1 << 18
-	FLAG_EXPENSIVE       Flag = 1 << 19
-	FLAG_STREAM          Flag = 1 << 20
-	FLAG_READONLY        Flag = 1 << 21
-	FLAG_EXTENDED        Flag = 1 << 12 // Special flag; same as FLAG_KEY
-	FLAG_NOT_MODIFIED    Flag = 1 << 25 // indicates that the property is not modified
-	FLAG_VERSION         Flag = (1 << 26) | (1 << 27) | (1 << 28)
-	FLAG_NULL            Flag = 1 << 29
-	FLAG_BORROW          Flag = 1 << 30
-	FLAG_ADOPT           Flag = (1 << 31)
+	FLAG_CLASS           Flag = 1 << 0                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_METHOD          Flag = 1 << 1                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_PROPERTY        Flag = 1 << 2                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_PARAMETER       Flag = 1 << 3                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_ASSOCIATION     Flag = 1 << 4                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_INDICATION      Flag = 1 << 5                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_REFERENCE       Flag = 1 << 6                                                                                                          // CIM meta type (or qualifier scope)
+	FLAG_ANY             Flag = FLAG_CLASS | FLAG_METHOD | FLAG_PROPERTY | FLAG_PARAMETER | FLAG_ASSOCIATION | FLAG_INDICATION | FLAG_REFERENCE //
+	FLAG_ENABLEOVERRIDE  Flag = 1 << 7                                                                                                          // qualifier flavors
+	FLAG_DISABLEOVERRIDE Flag = 1 << 8                                                                                                          // qualifier flavors
+	FLAG_RESTRICTED      Flag = 1 << 9                                                                                                          // qualifier flavors
+	FLAG_TOSUBCLASS      Flag = 1 << 10                                                                                                         // qualifier flavors
+	FLAG_TRANSLATABLE    Flag = 1 << 11                                                                                                         // qualifier flavors
+	FLAG_KEY             Flag = 1 << 12                                                                                                         // property qualifier
+	FLAG_IN              Flag = 1 << 13                                                                                                         // property qualifier
+	FLAG_OUT             Flag = 1 << 14                                                                                                         // property qualifier
+	FLAG_REQUIRED        Flag = 1 << 15                                                                                                         // property qualifier
+	FLAG_STATIC          Flag = 1 << 16                                                                                                         //
+	FLAG_ABSTRACT        Flag = 1 << 17                                                                                                         //
+	FLAG_TERMINAL        Flag = 1 << 18                                                                                                         //
+	FLAG_EXPENSIVE       Flag = 1 << 19                                                                                                         //
+	FLAG_STREAM          Flag = 1 << 20                                                                                                         //
+	FLAG_READONLY        Flag = 1 << 21                                                                                                         //
+	FLAG_EXTENDED        Flag = 1 << 12                                                                                                         // Special flag; same as FLAG_KEY
+	FLAG_NOT_MODIFIED    Flag = 1 << 25                                                                                                         // indicates that the property is not modified
+	FLAG_VERSION         Flag = (1 << 26) | (1 << 27) | (1 << 28)                                                                               //
+	FLAG_NULL            Flag = 1 << 29                                                                                                         // null value
+	FLAG_BORROW          Flag = 1 << 30                                                                                                         // memory management
+	FLAG_ADOPT           Flag = (1 << 31)                                                                                                       // memory management
 )
 
 var miFlags = map[Flag]string{
