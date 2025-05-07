@@ -144,7 +144,7 @@ func (c *Client) EnumerateAllInstances() {
 func (c *Client) Query(query string) {
 	session, err := c.app.NewSession()
 
-	if err != 0 {
+	if err != mi.RESULT_OK {
 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
 	}
 
@@ -172,8 +172,6 @@ func (c *Client) Query(query string) {
 		}
 
 		if instance != nil {
-			// MI_UInt32 index;
-			// var index uint32
 			var elementCount uint32
 
 			err := instance.GetElementCount(&elementCount)
@@ -184,26 +182,26 @@ func (c *Client) Query(query string) {
 
 			var i uint32
 			for i = 0; i < elementCount; i++ {
-
 				// MI_Value value;
-				value := &mi.Value{}
+				value := new(mi.Value)
 				// MI_Type type;
-				var vType mi.Type
+				vType := new(mi.Type)
 				// MI_Uint32 flags;
-				var flags mi.Flag
+				flags := new(mi.Flag)
 
-				// fmt.Printf("&i: %p :: ", &i)
-				name, err := instance.GetElementAt(&i, value, &vType, &flags)
+				name, err := instance.GetElementAt(&i, value, vType, flags)
 
-				if flags.HasFlag(mi.FLAG_NULL) {
+				if err != mi.RESULT_OK {
+					fmt.Fprintf(os.Stderr, "error %d: getting element at index: %d\n", err, i)
 					continue
 				}
 
-				if err != mi.RESULT_OK {
-					fmt.Printf("error %d: getting element at index: %d\n", err, i)
+				if flags.HasFlag(mi.FLAG_NULL) {
+					fmt.Fprintf(os.Stdout, "%s: <NULL>\n", windows.UTF16PtrToString(name))
+					continue
 				}
 
-				fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(vType))
+				fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
 			}
 		}
 	}
