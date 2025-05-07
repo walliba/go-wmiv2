@@ -39,23 +39,31 @@ type MI_InstanceFT struct {
 	GetClass        uintptr
 }
 
+func (i *MI_Instance) isValid() bool {
+	return i != nil && i.ft != nil
+}
+
 func (i *MI_Instance) Clone() {
 	panic("not implemented")
 }
 
 func (i *MI_Instance) Destruct() Result {
-	if i != nil && i.ft != nil {
-		r0, _, _ := syscall.SyscallN(i.ft.Destruct,
-			uintptr(unsafe.Pointer(i)),
-		)
-
-		return Result(r0)
+	if !i.isValid() {
+		return RESULT_INVALID_PARAMETER
 	}
 
-	return Result(1)
+	r0, _, _ := syscall.SyscallN(i.ft.Destruct,
+		uintptr(unsafe.Pointer(i)),
+	)
+
+	return Result(r0)
 }
 
 func (i *MI_Instance) Delete() Result {
+	if !i.isValid() {
+		return RESULT_INVALID_PARAMETER
+	}
+
 	r0, _, _ := syscall.SyscallN(i.ft.Delete,
 		uintptr(unsafe.Pointer(i)),
 	)
@@ -76,6 +84,9 @@ func (i *MI_Instance) SetNameSpace() {
 }
 
 func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
+	if !i.isValid() {
+		return nil, RESULT_INVALID_PARAMETER
+	}
 
 	var namespace *uint16
 
@@ -88,6 +99,10 @@ func (i *MI_Instance) GetNameSpace() (*uint16, Result) {
 }
 
 func (i *MI_Instance) GetElementCount(count *uint32) Result {
+	if !i.isValid() {
+		return RESULT_INVALID_PARAMETER
+	}
+
 	r0, _, _ := syscall.SyscallN(i.ft.GetElementCount,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(count)),
@@ -108,8 +123,32 @@ func (i *MI_Instance) SetElementAt() {
 	panic("not implemented")
 }
 
-func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
+/*
+Set the value of the property at the given index.
 
+param: self a pointer to an instance.
+param: index the integer position of the property.
+param: value the new value for the property.
+param: type the CIM type of the property that will be set.
+param: flags bit flags indicating memory management policy
+
+	(FLAG_BORROW, FLAG_ADOPT) and null value
+	(FLAG_NULL).
+
+return:
+
+	MI_RESULT_OK, MI_RESULT_FAILED, MI_RESULT_TYPE_MISMATCH,
+	MI_RESULT_INVALID_PARAMETER, MI_RESULT_NOT_FOUND, MI_RESULT_FAILED
+
+See also: MI_Instance_GetAt()
+See also: MI_Instance_GetElementCount()
+*/
+func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
+	if !i.isValid() {
+		return RESULT_INVALID_PARAMETER
+	}
+
+	// Discard error because the syscall will return a RESULT_INVALID_PARAMETER anyway
 	n, _ := syscall.UTF16PtrFromString(name)
 
 	r0, _, _ := syscall.SyscallN(i.ft.GetElement,
@@ -125,6 +164,10 @@ func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result
 }
 
 func (i *MI_Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
+	if !i.isValid() {
+		return nil, RESULT_INVALID_PARAMETER
+	}
+
 	var name *uint16
 
 	r0, _, _ := syscall.SyscallN(i.ft.GetElementAt,
