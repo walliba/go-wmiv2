@@ -6,13 +6,13 @@ import (
 )
 
 // _MI_Application
-type MI_Application struct {
+type Application struct {
 	reserved1 uint64
 	reserved2 int64
-	ft        *MI_ApplicationFT
+	ft        *ApplicationFT
 }
 
-type MI_ApplicationFT struct {
+type ApplicationFT struct {
 	Close                          uintptr
 	NewSession                     uintptr
 	NewHostedProvider              uintptr
@@ -26,13 +26,13 @@ type MI_ApplicationFT struct {
 	NewClass                       uintptr
 }
 
-func (app *MI_Application) Close() Result {
+func (app *Application) Close() Result {
 	r0, _, _ := syscall.SyscallN(app.ft.Close, uintptr(unsafe.Pointer(app)))
 
 	return Result(r0)
 }
 
-func (app *MI_Application) NewSession() (*MI_Session, Result) {
+func (app *Application) NewSession() (*MI_Session, Result) {
 	session := &MI_Session{}
 
 	r0, _, _ := syscall.SyscallN(app.ft.NewSession, uintptr(unsafe.Pointer(app)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(session)))
@@ -40,23 +40,47 @@ func (app *MI_Application) NewSession() (*MI_Session, Result) {
 	return session, Result(r0)
 }
 
-func (app *MI_Application) NewHostedProvider() {
+func (app *Application) NewHostedProvider() {
 	panic("not implemented")
 }
 
-func (app *MI_Application) NewInstance() {
+func (app *Application) NewInstance() {
 	panic("not implemented")
 }
 
-func (app *MI_Application) NewDestinationOptions() {
+func (app *Application) NewDestinationOptions() {
+	panic("not implemented")
+}
+
+func (app *Application) NewOperationOptions() {
+	panic("not implemented")
+}
+
+func (app *Application) NewSubscriptionDeliveryOptions() {
+	panic("not implemented")
+}
+
+func (app *Application) NewSerializer() {
+	panic("not implemented")
+}
+
+func (app *Application) NewDeserializer() {
+	panic("not implemented")
+}
+
+func (app *Application) NewInstanceFromClass() {
+	panic("not implemented")
+}
+
+func (app *Application) NewClass() {
 	panic("not implemented")
 }
 
 // TODO: Convert to app.Initialize()
-func MI_Application_Initialize() (*MI_Application, Result) {
+func MI_Application_Initialize() (*Application, Result) {
 	flags := uint32(0)
 
-	application := &MI_Application{}
+	application := &Application{}
 
 	r0, _, _ := procMIApplicationInitialize.Call(
 		uintptr(flags), 0, 0, uintptr(unsafe.Pointer(application)),
