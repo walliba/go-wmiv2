@@ -141,7 +141,7 @@ func (c *Client) EnumerateAllInstances() {
 	fmt.Printf("Done: %d\n", instanceCount)
 }
 
-func (c *Client) Query(query string) {
+func (c *Client) Query(query string) map[string]any {
 	session, err := c.app.NewSession()
 
 	if err != mi.RESULT_OK {
@@ -161,6 +161,10 @@ func (c *Client) Query(query string) {
 			panic("Failed to close MI_Operation handle")
 		}
 	}()
+
+	// NOTE: not safe for concurrent use
+	// NOTE: must be an []map[string]any or better for multiple instances
+	result := make(map[string]any)
 
 	for moreResults := true; moreResults; {
 
@@ -197,13 +201,18 @@ func (c *Client) Query(query string) {
 				}
 
 				if flags.HasFlag(mi.FLAG_NULL) {
-					fmt.Fprintf(os.Stdout, "%s: <NULL>\n", windows.UTF16PtrToString(name))
+					// fmt.Fprintf(os.Stdout, "%s: <NULL>\n", windows.UTF16PtrToString(name))
+					key := windows.UTF16PtrToString(name)
+					result[key] = nil
 					continue
 				}
 
-				fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
+				// fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
+				key := windows.UTF16PtrToString(name)
+				result[key] = value.As(*vType)
 			}
 		}
 	}
 
+	return result
 }

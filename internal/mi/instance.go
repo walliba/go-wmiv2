@@ -123,26 +123,7 @@ func (i *MI_Instance) SetElementAt() {
 	panic("not implemented")
 }
 
-/*
-Set the value of the property at the given index.
-
-param: self a pointer to an instance.
-param: index the integer position of the property.
-param: value the new value for the property.
-param: type the CIM type of the property that will be set.
-param: flags bit flags indicating memory management policy
-
-	(FLAG_BORROW, FLAG_ADOPT) and null value
-	(FLAG_NULL).
-
-return:
-
-	MI_RESULT_OK, MI_RESULT_FAILED, MI_RESULT_TYPE_MISMATCH,
-	MI_RESULT_INVALID_PARAMETER, MI_RESULT_NOT_FOUND, MI_RESULT_FAILED
-
-See also: MI_Instance_GetAt()
-See also: MI_Instance_GetElementCount()
-*/
+// Gets the value of the property with the given name.
 func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
@@ -163,6 +144,7 @@ func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result
 	return Result(r0)
 }
 
+// Get the value of the property at the given index.
 func (i *MI_Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
 	if !i.isValid() {
 		return nil, RESULT_INVALID_PARAMETER
