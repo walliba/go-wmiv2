@@ -124,12 +124,12 @@ func (i *MI_Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result
 	return Result(r0)
 }
 
-func (i *MI_Instance) GetElementAt(idx uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
+func (i *MI_Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
 	var name *uint16
 
 	r0, _, _ := syscall.SyscallN(i.ft.GetElementAt,
 		uintptr(unsafe.Pointer(i)),
-		uintptr(idx),
+		uintptr(*idx),
 		uintptr(unsafe.Pointer(&name)),
 		uintptr(unsafe.Pointer(v)),
 		uintptr(unsafe.Pointer(t)),

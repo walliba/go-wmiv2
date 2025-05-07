@@ -171,27 +171,20 @@ func (c *Client) Query(query string) {
 			continue
 		}
 
-		// namespace, err := instance.GetNameSpace()
-
-		// if err != mi.RESULT_OK {
-		// 	fmt.Println("failed on instance->GetNameSpace")
-		// 	break
-		// }
-
-		// fmt.Println(windows.UTF16PtrToString(namespace))
-
 		if instance != nil {
 			// MI_UInt32 index;
 			// var index uint32
-			var eCount uint32
+			var elementCount uint32
 
-			err := instance.GetElementCount(&eCount)
+			err := instance.GetElementCount(&elementCount)
 
 			if err != mi.RESULT_OK {
 				fmt.Println("error getting element count")
 			}
 
-			for i := uint32(0); i < eCount; i++ {
+			var i uint32
+			for i = 0; i < elementCount; i++ {
+
 				// MI_Value value;
 				value := &mi.Value{}
 				// MI_Type type;
@@ -199,7 +192,8 @@ func (c *Client) Query(query string) {
 				// MI_Uint32 flags;
 				var flags mi.Flag
 
-				name, err := instance.GetElementAt(i, value, &vType, &flags)
+				// fmt.Printf("&i: %p :: ", &i)
+				name, err := instance.GetElementAt(&i, value, &vType, &flags)
 
 				if flags.HasFlag(mi.FLAG_NULL) {
 					continue
