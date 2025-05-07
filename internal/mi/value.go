@@ -46,7 +46,7 @@ func (v *Value) As(t Type) any {
 		// 13
 		ptr := v.GetPointer()
 		if ptr != nil {
-			return windows.UTF16PtrToString((*uint16)(*(*unsafe.Pointer)(ptr)))
+			return windows.UTF16PtrToString(*(**uint16)((ptr)))
 		}
 	default:
 		fmt.Fprintf(os.Stderr, "<unsupported type: %d>\n", t)
