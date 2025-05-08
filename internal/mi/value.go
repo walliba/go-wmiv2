@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/walliba/go-wmiv2/internal/mi/types"
+	"github.com/walliba/go-wmiv2/internal/mi/util"
 	"golang.org/x/sys/windows"
 )
 
@@ -48,7 +49,7 @@ const (
 )
 
 type Value struct {
-	raw *int64
+	raw unsafe.Pointer
 }
 
 func (v *Value) As(t Type) any {
@@ -90,6 +91,12 @@ func (v *Value) As(t Type) any {
 	case MI_STRING:
 		// 13
 		return windows.UTF16PtrToString(*(**uint16)((ptr)))
+	case MI_UINT16A:
+		// 19
+		return (*(*types.Array[uint16])(ptr)).MakeSlice()
+	case MI_STRINGA:
+		// 29
+		return util.UTF16PtrsToStrings((*(*types.Array[*uint16])(ptr)).MakeSlice())
 	default:
 		fmt.Fprintf(os.Stderr, "<unsupported type: %d>\n", t)
 	}
@@ -100,3 +107,9 @@ func (v *Value) As(t Type) any {
 func (v *Value) GetPointer() unsafe.Pointer {
 	return unsafe.Pointer(&v.raw)
 }
+
+// func MIArrayToSlice[T ](v T) []T {
+
+// 	result := make([]T, 0, sa.GetSize())
+
+// }
