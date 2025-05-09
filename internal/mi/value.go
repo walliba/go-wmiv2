@@ -91,6 +91,15 @@ func (v *Value) As(t Type) any {
 	case MI_STRING:
 		// 13
 		return windows.UTF16PtrToString(*(**uint16)((ptr)))
+	case MI_INSTANCE:
+		instance, _ := (*(**Instance)(ptr)).Clone()
+		return instance
+	case MI_UINT8A:
+		// 17
+		return (*(*types.Array[uint8])(ptr)).MakeSlice()
+	case MI_SINT8A:
+		// 18
+		return (*(*types.Array[int8])(ptr)).MakeSlice()
 	case MI_UINT16A:
 		// 19
 		return (*(*types.Array[uint16])(ptr)).MakeSlice()

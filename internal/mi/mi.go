@@ -67,21 +67,3 @@ type MethodDecl struct {
 	schema        *SchemaDecl
 	function      uintptr // MethodDecl_Invoke
 }
-
-type ClassDecl struct {
-	flags          Flag // uint32
-	code           uint32
-	name           *uint16
-	qualifiers     **Qualifier
-	numQualifiers  uint32
-	properties     **PropertyDecl
-	numProperties  uint32
-	size           uint32
-	superClass     *uint16
-	superClassDecl *ClassDecl
-	methods        **MethodDecl
-	numMethods     uint32
-	schema         *SchemaDecl
-	ft             uintptr // ProviderFT
-	owningClass    *Class
-}
