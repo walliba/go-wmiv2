@@ -1,7 +1,5 @@
 package mi
 
-import "unsafe"
-
 type QualifierDecl struct {
 	name      *uint16
 	_type     Type
