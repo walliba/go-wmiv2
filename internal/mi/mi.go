@@ -1,29 +1,6 @@
 package mi
 
-type Class struct {
-	ft            *ClassFT
-	classDecl     *ClassDecl
-	namespaceName *uint16
-	serverName    *uint16
-	reserved      [4]int64
-}
-
-type ClassFT struct {
-	GetClassName         uintptr
-	GetNameSpace         uintptr
-	GetServerName        uintptr
-	GetElementCount      uintptr
-	GetElement           uintptr
-	GetElementAt         uintptr
-	GetClassQualifierSet uintptr
-	GetMethodCount       uintptr
-	GetMethodAt          uintptr
-	GetMethod            uintptr
-	GetParentClassName   uintptr
-	GetParentClass       uintptr
-	Delete               uintptr
-	Clone                uintptr
-}
+import "unsafe"
 
 type QualifierDecl struct {
 	name      *uint16
