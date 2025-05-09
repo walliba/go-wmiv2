@@ -59,6 +59,8 @@ func (i *Instance) Destruct() Result {
 	return Result(r0)
 }
 
+// Delete releases an instance that was created on the heap. Instances
+// created with [Clone] should eventually be passed to Delete
 func (i *Instance) Delete() Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
@@ -123,7 +125,7 @@ func (i *Instance) SetElementAt() {
 	panic("not implemented")
 }
 
-// Gets the value of the property with the given name.
+// GetElement retrieves the value of the property with the given name.
 func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
@@ -144,7 +146,7 @@ func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 	return Result(r0)
 }
 
-// Get the value of the property at the given index.
+// GetElementAt retrieves the value of the property at the given index.
 func (i *Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
 	if !i.isValid() {
 		return nil, RESULT_INVALID_PARAMETER
@@ -172,6 +174,9 @@ func (i *Instance) ClearElementAt() {
 	panic("not implemented")
 }
 
+// GetServerName retrieves the server name from the instance. The resultant name
+// memory is owned by the instance and will be destroyed when
+// the instance is deleted.
 func (i *Instance) GetServerName() {
 	panic("not implemented")
 }
