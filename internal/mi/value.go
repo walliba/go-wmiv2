@@ -54,62 +54,87 @@ type Value struct {
 	raw unsafe.Pointer
 }
 
-type decoderFn func(ptr unsafe.Pointer) any
-
-var decoderTable = [...]decoderFn{
-	MI_BOOLEAN:    func(p unsafe.Pointer) any { return *(*bool)(p) },
-	MI_UINT8:      func(p unsafe.Pointer) any { return *(*uint8)(p) },
-	MI_SINT8:      func(p unsafe.Pointer) any { return *(*int8)(p) },
-	MI_UINT16:     func(p unsafe.Pointer) any { return *(*uint16)(p) },
-	MI_SINT16:     func(p unsafe.Pointer) any { return *(*int16)(p) },
-	MI_UINT32:     func(p unsafe.Pointer) any { return *(*uint32)(p) },
-	MI_SINT32:     func(p unsafe.Pointer) any { return *(*int32)(p) },
-	MI_UINT64:     func(p unsafe.Pointer) any { return *(*uint64)(p) },
-	MI_SINT64:     func(p unsafe.Pointer) any { return *(*int64)(p) },
-	MI_REAL32:     func(p unsafe.Pointer) any { return *(*float32)(p) },
-	MI_REAL64:     func(p unsafe.Pointer) any { return *(*float64)(p) },
-	MI_CHAR16:     func(p unsafe.Pointer) any { return *(*rune)(p) }, // I don't know if this actually works; I can't find a class that uses MI_CHAR16
-	MI_DATETIME:   func(p unsafe.Pointer) any { return *(*types.DateTime)(p) },
-	MI_STRING:     func(p unsafe.Pointer) any { return windows.UTF16PtrToString(*(**uint16)(p)) },
-	MI_REFERENCE:  func(p unsafe.Pointer) any { return "<not_implemented>" },
-	MI_INSTANCE:   func(p unsafe.Pointer) any { return (*(**Instance)(p)).String() }, // Embedded instances get their memory prematurely freed, so just passing the string until I find a solution that isn't cloning
-	MI_BOOLEANA:   func(p unsafe.Pointer) any { return (*(*types.Array[bool])(p)).MakeSlice() },
-	MI_UINT8A:     func(p unsafe.Pointer) any { return (*(*types.Array[uint8])(p)).MakeSlice() },
-	MI_SINT8A:     func(p unsafe.Pointer) any { return (*(*types.Array[int8])(p)).MakeSlice() },
-	MI_UINT16A:    func(p unsafe.Pointer) any { return (*(*types.Array[uint16])(p)).MakeSlice() },
-	MI_SINT16A:    func(p unsafe.Pointer) any { return (*(*types.Array[int16])(p)).MakeSlice() },
-	MI_UINT32A:    func(p unsafe.Pointer) any { return (*(*types.Array[uint32])(p)).MakeSlice() },
-	MI_SINT32A:    func(p unsafe.Pointer) any { return (*(*types.Array[int32])(p)).MakeSlice() },
-	MI_UINT64A:    func(p unsafe.Pointer) any { return (*(*types.Array[uint64])(p)).MakeSlice() },
-	MI_SINT64A:    func(p unsafe.Pointer) any { return (*(*types.Array[int64])(p)).MakeSlice() },
-	MI_REAL32A:    func(p unsafe.Pointer) any { return (*(*types.Array[float32])(p)).MakeSlice() },
-	MI_REAL64A:    func(p unsafe.Pointer) any { return (*(*types.Array[float64])(p)).MakeSlice() },
-	MI_CHAR16A:    func(p unsafe.Pointer) any { return (*(*types.Array[rune])(p)).MakeSlice() }, // I don't know if this actually works; I can't find a class that uses MI_CHAR16[]
-	MI_DATETIMEA:  func(p unsafe.Pointer) any { return (*(*types.Array[types.DateTime])(p)).MakeSlice() },
-	MI_STRINGA:    func(p unsafe.Pointer) any { return util.UTF16PtrsToStrings((*(*types.Array[*uint16])(p)).MakeSlice()) },
-	MI_REFERENCEA: func(p unsafe.Pointer) any { return "<not_implemented>" },
-	MI_INSTANCEA:  func(p unsafe.Pointer) any { return "<not_implemented>" },
-}
-
 // As reinterpret casts, or allocates (make), the memory at v.raw with the Go equivalent denoted by t
 func (v *Value) As(t Type) any {
-
 	ptr := v.GetPointer()
 
-	// Can this be nil..?
 	if ptr == nil {
 		panic("<value pointer is null>")
 	}
 
-	if t > len(decoderTable)-1 {
+	switch t {
+	case MI_BOOLEAN:
+		return *(*bool)(ptr)
+	case MI_UINT8:
+		return *(*uint8)(ptr)
+	case MI_SINT8:
+		return *(*int8)(ptr)
+	case MI_UINT16:
+		return *(*uint16)(ptr)
+	case MI_SINT16:
+		return *(*int16)(ptr)
+	case MI_UINT32:
+		return *(*uint32)(ptr)
+	case MI_SINT32:
+		return *(*int32)(ptr)
+	case MI_UINT64:
+		return *(*uint64)(ptr)
+	case MI_SINT64:
+		return *(*int64)(ptr)
+	case MI_REAL32:
+		return *(*float32)(ptr)
+	case MI_REAL64:
+		return *(*float64)(ptr)
+	case MI_CHAR16:
+		return *(*rune)(ptr) // rune is alias for int32
+	case MI_DATETIME:
+		return *(*types.DateTime)(ptr)
+	case MI_STRING:
+		return windows.UTF16PtrToString(*(**uint16)(ptr))
+	case MI_REFERENCE:
+		return "<not_implemented>"
+	case MI_INSTANCE:
+		return (*(**Instance)(ptr)).String() // workaround for premature GC issue
+
+	// Arrays
+	case MI_BOOLEANA:
+		return (*(*types.Array[bool])(ptr)).MakeSlice()
+	case MI_UINT8A:
+		return (*(*types.Array[uint8])(ptr)).MakeSlice()
+	case MI_SINT8A:
+		return (*(*types.Array[int8])(ptr)).MakeSlice()
+	case MI_UINT16A:
+		return (*(*types.Array[uint16])(ptr)).MakeSlice()
+	case MI_SINT16A:
+		return (*(*types.Array[int16])(ptr)).MakeSlice()
+	case MI_UINT32A:
+		return (*(*types.Array[uint32])(ptr)).MakeSlice()
+	case MI_SINT32A:
+		return (*(*types.Array[int32])(ptr)).MakeSlice()
+	case MI_UINT64A:
+		return (*(*types.Array[uint64])(ptr)).MakeSlice()
+	case MI_SINT64A:
+		return (*(*types.Array[int64])(ptr)).MakeSlice()
+	case MI_REAL32A:
+		return (*(*types.Array[float32])(ptr)).MakeSlice()
+	case MI_REAL64A:
+		return (*(*types.Array[float64])(ptr)).MakeSlice()
+	case MI_CHAR16A:
+		return (*(*types.Array[rune])(ptr)).MakeSlice()
+	case MI_DATETIMEA:
+		return (*(*types.Array[types.DateTime])(ptr)).MakeSlice()
+	case MI_STRINGA:
+		return util.UTF16PtrsToStrings((*(*types.Array[*uint16])(ptr)).MakeSlice())
+	case MI_REFERENCEA, MI_INSTANCEA:
+		return "<not_implemented>"
+
+	default:
 		fmt.Fprintf(os.Stderr, "<unsupported type: %d>\n", t)
 		return nil
 	}
-
-	return decoderTable[t](ptr)
 }
 
 // GetPointer retrieves a pointer to the address of the underlying raw data
-func (v Value) GetPointer() unsafe.Pointer {
+func (v *Value) GetPointer() unsafe.Pointer {
 	return unsafe.Pointer(&v.raw)
 }
