@@ -1,6 +1,7 @@
 package mi
 
 import (
+	"runtime"
 	"syscall"
 	"unsafe"
 )
@@ -43,8 +44,29 @@ func (i *Instance) isValid() bool {
 	return i != nil && i.ft != nil
 }
 
-func (i *Instance) Clone() {
-	panic("not implemented")
+// Clone creates a copy of the given instance on the heap. Upon
+// a successful return, newInstance points to a newly created instance. The
+// new instance should eventually call [Delete].
+func (i *Instance) Clone() (*Instance, Result) {
+	if !i.isValid() {
+		return nil, RESULT_INVALID_PARAMETER
+	}
+
+	var newInstance *Instance
+
+	r0, _, _ := syscall.SyscallN(i.ft.Clone,
+		uintptr(unsafe.Pointer(i)),
+		uintptr(unsafe.Pointer(&newInstance)),
+	)
+
+	// TODO: needs testing for stability
+	runtime.AddCleanup(&newInstance, func(i *Instance) {
+		if i.isValid() {
+			i.Delete()
+		}
+	}, newInstance)
+
+	return newInstance, Result(r0)
 }
 
 func (i *Instance) Destruct() Result {
