@@ -4,6 +4,8 @@ import (
 	"runtime"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 type Instance struct {
@@ -38,6 +40,16 @@ type InstanceFT struct {
 	GetServerName   uintptr
 	SetServerName   uintptr
 	GetClass        uintptr
+}
+
+func (i *Instance) String() string {
+	n, err := i.GetClassName()
+
+	if err != RESULT_OK {
+		return "<class_instance>"
+	}
+
+	return windows.UTF16PtrToString(n)
 }
 
 func (i *Instance) isValid() bool {
@@ -99,8 +111,19 @@ func (i *Instance) IsA() {
 	panic("not implemented")
 }
 
-func (i *Instance) GetClassName() {
-	panic("not implemented")
+func (i *Instance) GetClassName() (*uint16, Result) {
+	if !i.isValid() {
+		return nil, RESULT_INVALID_PARAMETER
+	}
+
+	var className *uint16
+
+	r0, _, _ := syscall.SyscallN(i.ft.GetClassName,
+		uintptr(unsafe.Pointer(i)),
+		uintptr(unsafe.Pointer(&className)),
+	)
+
+	return className, Result(r0)
 }
 
 func (i *Instance) SetNameSpace() {
