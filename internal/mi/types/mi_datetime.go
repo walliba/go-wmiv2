@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-// TODO: translate to a time.Date or time.Duration
+// TODO: translate to a time.Time
 
 type Timestamp struct {
 	Year         uint32
