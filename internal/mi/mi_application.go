@@ -35,7 +35,15 @@ func (app *Application) Close() Result {
 func (app *Application) NewSession() (*Session, Result) {
 	session := &Session{}
 
-	r0, _, _ := syscall.SyscallN(app.ft.NewSession, uintptr(unsafe.Pointer(app)), 0, 0, 0, 0, 0, uintptr(unsafe.Pointer(session)))
+	r0, _, _ := syscall.SyscallN(app.ft.NewSession,
+		uintptr(unsafe.Pointer(app)),     // self *Application
+		uintptr(0),                       // protocol *uint16
+		uintptr(0),                       // destination *uint16
+		uintptr(0),                       // options *DestinationOptions
+		uintptr(0),                       // callbacks *SessionCallbacks
+		uintptr(0),                       // extendedError **Instance
+		uintptr(unsafe.Pointer(session)), // session *Session
+	)
 
 	return session, Result(r0)
 }
