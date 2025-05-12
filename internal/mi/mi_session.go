@@ -24,7 +24,7 @@ type SessionFT struct {
 	EnumerateInstances  uintptr
 	QueryInstances      uintptr
 	AssociatorInstances uintptr
-	ReferenceInstaces   uintptr
+	ReferenceInstances  uintptr
 	Subscribe           uintptr
 	GetClass            uintptr
 	EnumerateClasses    uintptr

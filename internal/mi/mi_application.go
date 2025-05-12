@@ -32,17 +32,18 @@ func (app *Application) Close() Result {
 	return Result(r0)
 }
 
-func (app *Application) NewSession() (*Session, Result) {
+func (app *Application) NewSession(destination *uint16, options *DestinationOptions) (*Session, Result) {
+	// TODO: verify if this allows GC to free?
 	session := &Session{}
 
 	r0, _, _ := syscall.SyscallN(app.ft.NewSession,
-		uintptr(unsafe.Pointer(app)),     // self *Application
-		uintptr(0),                       // protocol *uint16
-		uintptr(0),                       // destination *uint16
-		uintptr(0),                       // options *DestinationOptions
-		uintptr(0),                       // callbacks *SessionCallbacks
-		uintptr(0),                       // extendedError **Instance
-		uintptr(unsafe.Pointer(session)), // session *Session
+		uintptr(unsafe.Pointer(app)),         // self *Application
+		uintptr(0),                           // protocol *uint16
+		uintptr(unsafe.Pointer(destination)), // destination *uint16
+		uintptr(unsafe.Pointer(options)),     // options *DestinationOptions
+		uintptr(0),                           // callbacks *SessionCallbacks
+		uintptr(0),                           // extendedError **Instance
+		uintptr(unsafe.Pointer(session)),     // session *Session
 	)
 
 	return session, Result(r0)
@@ -56,8 +57,15 @@ func (app *Application) NewInstance() {
 	panic("not implemented")
 }
 
-func (app *Application) NewDestinationOptions() {
-	panic("not implemented")
+func (app *Application) NewDestinationOptions() (*DestinationOptions, Result) {
+	options := &DestinationOptions{}
+
+	r0, _, _ := syscall.SyscallN(app.ft.NewDestinationOptions,
+		uintptr(unsafe.Pointer(app)),     // self *Application
+		uintptr(unsafe.Pointer(options)), // options *DestinationOptions
+	)
+
+	return options, Result(r0)
 }
 
 func (app *Application) NewOperationOptions() {

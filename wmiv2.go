@@ -1,3 +1,4 @@
+// wmiv2 is the public-facing package that encapsulates access to the underlying MI API.
 package wmiv2
 
 import (
@@ -9,6 +10,11 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+/*
+Client should function as a singleton for the lifespan of the application
+
+TODO: write code to support above statement
+*/
 type Client struct {
 	IsInitialized bool
 	app           *mi.Application
@@ -19,6 +25,7 @@ var once sync.Once
 
 func GetClient() *Client {
 	once.Do(func() {
+		fmt.Println("initializing client")
 		app, err := mi.MI_Application_Initialize()
 
 		if err != mi.RESULT_OK {
@@ -31,7 +38,7 @@ func GetClient() *Client {
 
 		instance = &Client{true, app}
 	})
-
+	fmt.Println("Getting client")
 	return instance
 }
 
@@ -41,114 +48,112 @@ func (c *Client) Close() {
 	}
 }
 
-// .Description
-// This will be (eventually) the abstraction layer to make using the API more go-like
+// func (c *Client) EnumerateAllInstances() {
+// 	session, err := c.app.NewSession()
 
-func (c *Client) EnumerateAllInstances() {
-	session, err := c.app.NewSession()
+// 	if err != 0 {
+// 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
+// 	}
 
-	if err != 0 {
-		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
-	}
+// 	defer func() {
+// 		if err := session.Close(); err != mi.RESULT_OK {
+// 			panic("Failed to close MI_Session handle")
+// 		}
+// 	}()
 
-	defer func() {
-		if err := session.Close(); err != mi.RESULT_OK {
-			panic("Failed to close MI_Session handle")
-		}
-	}()
+// 	// fmt.Printf("*MI_Session: %#x\n", &session)
 
-	// fmt.Printf("*MI_Session: %#x\n", &session)
+// 	// var miOperation
 
-	// var miOperation
+// 	operation := session.EnumerateInstances("root\\cimv2", "Win32_Process")
 
-	operation := session.EnumerateInstances("root\\cimv2", "Win32_Process")
+// 	defer func() {
+// 		if err := operation.Close(); err != mi.RESULT_OK {
+// 			panic("Failed to close MI_Operation handle")
+// 		}
+// 	}()
+// 	// if err != 0 {
+// 	// 	panic(fmt.Sprintf("failed to enumerate session instances: %v", err))
+// 	// }
+// 	// fmt.Printf("*MI_Operation: %#x\n", &operation)
 
-	defer func() {
-		if err := operation.Close(); err != mi.RESULT_OK {
-			panic("Failed to close MI_Operation handle")
-		}
-	}()
-	// if err != 0 {
-	// 	panic(fmt.Sprintf("failed to enumerate session instances: %v", err))
-	// }
-	// fmt.Printf("*MI_Operation: %#x\n", &operation)
+// 	// var moreResults bool = true
 
-	// var moreResults bool = true
+// 	var instanceCount uint32 = 0
 
-	var instanceCount uint32 = 0
+// 	for moreResults := true; moreResults; {
+// 		// var instance *mi.MI_Instance
 
-	for moreResults := true; moreResults; {
-		// var instance *mi.MI_Instance
+// 		instance, err := operation.GetInstance(&moreResults)
 
-		instance, err := operation.GetInstance(&moreResults)
+// 		if err != 0 {
+// 			fmt.Println("failed on operation->GetInstance")
+// 			break
+// 		}
 
-		if err != 0 {
-			fmt.Println("failed on operation->GetInstance")
-			break
-		}
+// 		// fmt.Printf("*MI_Instance: %#x\n", &instance)
 
-		// fmt.Printf("*MI_Instance: %#x\n", &instance)
+// 		if instance != nil {
+// 			// MI_Value value;
+// 			var value mi.Value
+// 			// MI_Type type;
+// 			var vType mi.Type
+// 			// MI_Uint32 flags;
+// 			var flags mi.Flag
+// 			// MI_UInt32 index;
+// 			// var index uint32
 
-		if instance != nil {
-			// MI_Value value;
-			var value mi.Value
-			// MI_Type type;
-			var vType mi.Type
-			// MI_Uint32 flags;
-			var flags mi.Flag
-			// MI_UInt32 index;
-			// var index uint32
+// 			err := instance.GetElement("Name", &value, &vType, &flags)
 
-			err := instance.GetElement("Name", &value, &vType, &flags)
+// 			if err != mi.RESULT_OK {
+// 				return
+// 			}
 
-			if err != mi.RESULT_OK {
-				return
-			}
+// 			fmt.Println(value.As(vType))
 
-			fmt.Println(value.As(vType))
+// 			// fmt.Println(flags.HasFlag(mi.FLAG_READONLY))
+// 			// fmt.Println(flags.GetFlags())
+// 			// fmt.Println(mi.ListSetFlags(flags))
+// 			// err := instance.GetElementCount(&count)
 
-			// fmt.Println(flags.HasFlag(mi.FLAG_READONLY))
-			// fmt.Println(flags.GetFlags())
-			// fmt.Println(mi.ListSetFlags(flags))
-			// err := instance.GetElementCount(&count)
+// 			// if err != 0 {
+// 			// 	fmt.Println("error getting count")
+// 			// 	break
+// 			// }
 
-			// if err != 0 {
-			// 	fmt.Println("error getting count")
-			// 	break
-			// }
+// 			// fmt.Println(count)
 
-			// fmt.Println(count)
+// 		}
+// 		instanceCount++
+// 		// value, err := instance.GetElement()
 
-		}
-		instanceCount++
-		// value, err := instance.GetElement()
+// 		// if err != 0 {
+// 		// 	panic("failed on instance->GetElement")
+// 		// }
 
-		// if err != 0 {
-		// 	panic("failed on instance->GetElement")
-		// }
+// 		// fmt.Printf("*MI_Value: %#x\n", &value)
 
-		// fmt.Printf("*MI_Value: %#x\n", &value)
+// 		// var s *string
+// 		// s = (*string)(unsafe.Pointer(&value))
 
-		// var s *string
-		// s = (*string)(unsafe.Pointer(&value))
+// 		// fmt.Println(s)
+// 		if !moreResults {
+// 			break
+// 		}
+// 	}
 
-		// fmt.Println(s)
-		if !moreResults {
-			break
-		}
-	}
-
-	fmt.Printf("Done: %d\n", instanceCount)
-}
+// 	fmt.Printf("Done: %d\n", instanceCount)
+// }
 
 func (c *Client) Query(query string) []map[string]any {
-	session, err := c.app.NewSession()
+	session, err := c.app.NewSession(windows.StringToUTF16Ptr("localhost"), nil)
 
 	if err != mi.RESULT_OK {
 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
 	}
 
 	defer func() {
+		fmt.Println("attempting to close session")
 		if err := session.Close(); err != mi.RESULT_OK {
 			panic("Failed to close MI_Session handle")
 		}
@@ -157,13 +162,13 @@ func (c *Client) Query(query string) []map[string]any {
 	operation := session.QueryInstances("root\\cimv2", query)
 
 	defer func() {
+		fmt.Println("attempting to close operation")
 		if err := operation.Close(); err != mi.RESULT_OK {
 			panic("Failed to close MI_Operation handle")
 		}
 	}()
 
-	// NOTE: not safe for concurrent use
-	// NOTE: must be an []map[string]any or better for multiple instances
+	// TODO: use a concurrency-safe map slice or alternative
 	result := make([]map[string]any, 0)
 	instanceCount := 0
 	for moreResults := true; moreResults; {
@@ -220,3 +225,5 @@ func (c *Client) Query(query string) []map[string]any {
 
 	return result
 }
+
+func (c *Client) NewDestinationCredentials(username string, password string) {}
