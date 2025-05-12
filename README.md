@@ -6,7 +6,7 @@ Go wrapper for Windows Management Infrastructure (WMIv2), built on syscall-level
 
 > [!WARNING]
 > This project is under active development and is not production-ready. APIs may change without notice.
-Once the first stable release is ready, [Semantic Versioning](https://semver.org/) will likely be used to communicate breaking changes and compatibility guarantees.
+Once the first stable release is ready, [Semantic Versioning](https://semver.org/) will be used to communicate breaking changes and compatibility guarantees.
 
 ## Goal
 
