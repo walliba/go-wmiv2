@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/walliba/go-wmiv2/internal/interop"
 	"github.com/walliba/go-wmiv2/internal/mi"
 	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
@@ -144,6 +145,12 @@ func (c *Client) Close() {
 
 // 	fmt.Printf("Done: %d\n", instanceCount)
 // }
+
+func IQuery(query string) *[]map[string]any {
+	session := interop.NewSession()
+
+	return session.Query("root\\cimv2", query)
+}
 
 func (c *Client) Query(query string) []map[string]any {
 	session, err := c.app.NewSession(nil, nil)
