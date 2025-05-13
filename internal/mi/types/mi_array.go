@@ -4,8 +4,8 @@ import (
 	"unsafe"
 )
 
-type MIArray interface {
-	Pointer() unsafe.Pointer
+type MIArray[T any] interface {
+	Pointer() *T
 	Size() uint32
 }
 
@@ -14,8 +14,8 @@ type Array[T any] struct {
 	size uint32
 }
 
-func (x Array[T]) Pointer() unsafe.Pointer {
-	return unsafe.Pointer(x.data)
+func (x Array[T]) Pointer() *T {
+	return x.data
 }
 
 func (x Array[T]) Size() uint32 {
@@ -23,20 +23,9 @@ func (x Array[T]) Size() uint32 {
 }
 
 func (x Array[T]) MakeSlice() []T {
-	return genericSlice[T](x)
+	return genericSlice(x)
 }
 
-func genericSlice[T any](arr MIArray) []T {
-	var size = arr.Size()
-	const max = 1 << 20
-
-	// reinterpret array to slice
-	mem := (*[max]T)(arr.Pointer())[:size:size]
-
-	// make a copy of the slice (C array) since mi.dll will free the memory after iteration
-	r := make([]T, size)
-	_ = copy(r, mem)
-
-	// return copy
-	return r
+func genericSlice[T any](arr MIArray[T]) []T {
+	return unsafe.Slice(arr.Pointer(), arr.Size())
 }
