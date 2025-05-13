@@ -7,7 +7,6 @@ import (
 
 	"github.com/walliba/go-wmiv2/internal/mi/types"
 	"github.com/walliba/go-wmiv2/internal/mi/util"
-	"golang.org/x/sys/windows"
 )
 
 type Type = int
@@ -90,7 +89,7 @@ func (v *Value) As(t Type) any {
 	case MI_DATETIME:
 		return *(*types.DateTime)(ptr)
 	case MI_STRING:
-		return windows.UTF16PtrToString(*(**uint16)(ptr))
+		return util.UTF16PtrToString(*(**uint16)(ptr))
 	case MI_REFERENCE:
 		return "<not_implemented>"
 	case MI_INSTANCE:

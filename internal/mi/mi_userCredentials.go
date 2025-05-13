@@ -1,6 +1,7 @@
 package mi
 
 import (
+	"syscall"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -25,9 +26,9 @@ type UserCredentials struct {
 }
 
 func NewUserCredentials(authType AuthType, domain string, username string, password string) *UserCredentials {
-	w_domain := windows.StringToUTF16Ptr(domain)
-	w_user := windows.StringToUTF16Ptr(username)
-	w_pass := windows.StringToUTF16Ptr(password)
+	w_domain, _ := syscall.UTF16PtrFromString(domain)
+	w_user, _ := syscall.UTF16PtrFromString(username)
+	w_pass, _ := syscall.UTF16PtrFromString(password)
 
 	return &UserCredentials{
 		authenticationType: authType,

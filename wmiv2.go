@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/walliba/go-wmiv2/internal/mi"
-	"golang.org/x/sys/windows"
+	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
 /*
@@ -146,7 +146,7 @@ func (c *Client) Close() {
 // }
 
 func (c *Client) Query(query string) []map[string]any {
-	session, err := c.app.NewSession(windows.StringToUTF16Ptr("localhost"), nil)
+	session, err := c.app.NewSession(nil, nil)
 
 	if err != mi.RESULT_OK {
 		panic(fmt.Sprintf("Failed on session creation, HRESULT = %d", err))
@@ -216,8 +216,7 @@ func (c *Client) Query(query string) []map[string]any {
 					continue
 				}
 
-				// fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
-				key := windows.UTF16PtrToString(name)
+				key := util.UTF16PtrToString(name)
 				instanceMap[key] = value.As(*vType)
 			}
 		}

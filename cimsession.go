@@ -3,9 +3,10 @@ package wmiv2
 import (
 	"fmt"
 	"os"
+	"syscall"
 
 	"github.com/walliba/go-wmiv2/internal/mi"
-	"golang.org/x/sys/windows"
+	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
 // type SessionOptions struct {
@@ -67,7 +68,11 @@ func NewCimSession(opts ...CimSessionOption) *CimSession {
 
 	cfg.credential.Destroy()
 
-	w_dest := windows.StringToUTF16Ptr(cfg.destination)
+	w_dest, _ := syscall.UTF16PtrFromString(cfg.destination)
+
+	if w_dest == nil {
+		panic("failed to convert string to *uint16")
+	}
 
 	session, err := instance.app.NewSession(w_dest, destOpt)
 
@@ -199,8 +204,7 @@ func (cs *CimSession) Query(query string) []map[string]any {
 					continue
 				}
 
-				// fmt.Fprintf(os.Stdout, "%s: %v\n", windows.UTF16PtrToString(name), value.As(*vType))
-				key := windows.UTF16PtrToString(name)
+				key := util.UTF16PtrToString(name)
 				instanceMap[key] = value.As(*vType)
 			}
 		}

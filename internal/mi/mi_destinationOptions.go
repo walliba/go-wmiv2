@@ -9,7 +9,7 @@ import (
 
 type DestinationOption = *uint16
 
-// NOTE: This may cause concurrency issues later on
+// NOTE: This may cause concurrency issues later on?
 var (
 	TIMEOUT                 DestinationOption = windows.StringToUTF16Ptr("__MI_DESTINATIONOPTIONS_TIMEOUT")
 	CERT_CA_CHECK           DestinationOption = windows.StringToUTF16Ptr("__MI_DESTINATIONOPTIONS_CERT_CA_CHECK")

@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"golang.org/x/sys/windows"
+	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
 type Instance struct {
@@ -49,7 +49,7 @@ func (i *Instance) String() string {
 		return "<class_instance>"
 	}
 
-	return windows.UTF16PtrToString(n)
+	return util.UTF16PtrToString(n)
 }
 
 func (i *Instance) isValid() bool {

@@ -3,8 +3,6 @@ package mi
 import (
 	"syscall"
 	"unsafe"
-
-	"golang.org/x/sys/windows"
 )
 
 type Session struct {
@@ -37,8 +35,7 @@ func (s *Session) Close() Result {
 }
 
 func (s *Session) QueryInstances(namespace string, query string) *Operation {
-
-	ns, _ := windows.UTF16PtrFromString(namespace)
+	ns, _ := syscall.UTF16PtrFromString(namespace)
 	d, _ := syscall.UTF16PtrFromString("WQL")
 	q, _ := syscall.UTF16PtrFromString(query)
 
