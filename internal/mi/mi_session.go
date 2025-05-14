@@ -78,3 +78,30 @@ func (s *Session) EnumerateInstances(namespace string, class string) *Operation 
 
 	return &miOperation
 }
+
+/*
+GetClass signature
+
+	[in]		session *Session
+					flags Flag
+	[in, optional]	options *OperationOptions
+*/
+func (s *Session) GetClass(namespaceName string, className string) *Operation {
+
+	namespace, _ := syscall.UTF16PtrFromString(namespaceName)
+	class, _ := syscall.UTF16PtrFromString(className)
+
+	operation := new(Operation)
+
+	_, _, _ = syscall.SyscallN(s.ft.GetClass,
+		uintptr(unsafe.Pointer(s)),
+		uintptr(0),
+		uintptr(0),
+		uintptr(unsafe.Pointer(namespace)),
+		uintptr(unsafe.Pointer(class)),
+		uintptr(0),
+		uintptr(unsafe.Pointer(operation)),
+	)
+
+	return operation
+}

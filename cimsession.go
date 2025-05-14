@@ -1,14 +1,5 @@
 package wmiv2
 
-import (
-	"fmt"
-	"os"
-	"syscall"
-
-	"github.com/walliba/go-wmiv2/internal/mi"
-	"github.com/walliba/go-wmiv2/internal/mi/util"
-)
-
 // type SessionOptions struct {
 // 	Destination        string
 // 	Credential         *mi.UserCredentials
@@ -16,74 +7,74 @@ import (
 // }
 
 // CimSession is a wrapper around an MI_Session instance. This struct is very similar to the object used in PowerShell
-type CimSession struct {
-	destination        string
-	session            *mi.Session
-	credential         *mi.UserCredentials
-	skipTestConnection bool
-}
+// type CimSession struct {
+// 	destination        string
+// 	session            *mi.Session
+// 	credential         *mi.UserCredentials
+// 	skipTestConnection bool
+// }
 
-type CimSessionOption func(*CimSession)
+// type CimSessionOption func(*CimSession)
 
-func WithDestination(destination string) CimSessionOption {
-	return func(c *CimSession) {
-		c.destination = destination
-	}
-}
+// func WithDestination(destination string) CimSessionOption {
+// 	return func(c *CimSession) {
+// 		c.destination = destination
+// 	}
+// }
 
-// TODO: Support different auth types
-func WithCredential(domain string, username string, password string) CimSessionOption {
-	return func(c *CimSession) {
-		c.credential = newCredentials(domain, username, password)
-	}
-}
+// // TODO: Support different auth types
+// func WithCredential(domain string, username string, password string) CimSessionOption {
+// 	return func(c *CimSession) {
+// 		c.credential = newCredentials(domain, username, password)
+// 	}
+// }
 
-// REFACTOR: this like a damn onion with these layers
-func newCredentials(domain string, username string, password string) *mi.UserCredentials {
-	return mi.NewUserCredentials(mi.AUTH_TYPE_DEFAULT, domain, username, password)
-}
+// // REFACTOR: this like a damn onion with these layers
+// func newCredentials(domain string, username string, password string) *mi.UserCredentials {
+// 	return mi.NewUserCredentials(mi.AUTH_TYPE_DEFAULT, domain, username, password)
+// }
 
-func NewCimSession(opts ...CimSessionOption) *CimSession {
-	// define defaults
-	cfg := &CimSession{
-		destination:        "localhost",
-		credential:         nil,
-		skipTestConnection: false,
-	}
+// func NewCimSession(opts ...CimSessionOption) *CimSession {
+// 	// define defaults
+// 	cfg := &CimSession{
+// 		destination:        "localhost",
+// 		credential:         nil,
+// 		skipTestConnection: false,
+// 	}
 
-	// apply config
-	for _, opt := range opts {
-		opt(cfg)
-	}
+// 	// apply config
+// 	for _, opt := range opts {
+// 		opt(cfg)
+// 	}
 
-	var destOpt *mi.DestinationOptions = nil
+// 	var destOpt *mi.DestinationOptions = nil
 
-	destOpt, err := instance.app.NewDestinationOptions()
+// 	destOpt, err := instance.app.NewDestinationOptions()
 
-	if err != mi.RESULT_OK {
-		panic("failure creating destination options")
-	}
+// 	if err != mi.RESULT_OK {
+// 		panic("failure creating destination options")
+// 	}
 
-	destOpt.AddCredentials(cfg.credential)
+// 	destOpt.AddCredentials(cfg.credential)
 
-	cfg.credential.Destroy()
+// 	cfg.credential.Destroy()
 
-	w_dest, _ := syscall.UTF16PtrFromString(cfg.destination)
+// 	w_dest, _ := syscall.UTF16PtrFromString(cfg.destination)
 
-	if w_dest == nil {
-		panic("failed to convert string to *uint16")
-	}
+// 	if w_dest == nil {
+// 		panic("failed to convert string to *uint16")
+// 	}
 
-	session, err := instance.app.NewSession(w_dest, destOpt)
+// 	session, err := instance.app.NewSession(w_dest, destOpt)
 
-	if err != mi.RESULT_OK {
-		panic(fmt.Sprintf("error NewCimSession: HRESULT = %d", err))
-	}
+// 	if err != mi.RESULT_OK {
+// 		panic(fmt.Sprintf("error NewCimSession: HRESULT = %d", err))
+// 	}
 
-	cfg.session = session
+// 	cfg.session = session
 
-	return cfg
-}
+// 	return cfg
+// }
 
 // func NewDefaultSession() *CimSession {}
 
@@ -141,74 +132,74 @@ func NewCimSession(opts ...CimSessionOption) *CimSession {
 // 	return cs
 // }
 
-func (cs *CimSession) Query(query string) []map[string]any {
+// func OldQuery(query string) []map[string]any {
 
-	if cs.session == nil {
-		panic("Underlying session is nil")
-	}
+// 	if cs.session == nil {
+// 		panic("Underlying session is nil")
+// 	}
 
-	operation := cs.session.QueryInstances("root\\cimv2", query)
+// 	operation := cs.session.QueryInstances("root\\cimv2", query)
 
-	defer func() {
-		fmt.Println("attempting to close operation")
-		if err := operation.Close(); err != mi.RESULT_OK {
-			panic("Failed to close MI_Operation handle")
-		}
-	}()
+// 	defer func() {
+// 		fmt.Println("attempting to close operation")
+// 		if err := operation.Close(); err != mi.RESULT_OK {
+// 			panic("Failed to close MI_Operation handle")
+// 		}
+// 	}()
 
-	// TODO: use a concurrency-safe map slice or alternative
-	result := make([]map[string]any, 0)
-	instanceCount := 0
-	for moreResults := true; moreResults; {
+// 	// TODO: use a concurrency-safe map slice or alternative
+// 	result := make([]map[string]any, 0)
+// 	instanceCount := 0
+// 	for moreResults := true; moreResults; {
 
-		instance, err := operation.GetInstance(&moreResults)
+// 		instance, err := operation.GetInstance(&moreResults)
 
-		if err != 0 {
-			fmt.Println("failed on operation->GetInstance")
-			continue
-		}
+// 		if err != 0 {
+// 			fmt.Println("failed on operation->GetInstance")
+// 			continue
+// 		}
 
-		if instance != nil {
-			instanceCount++
-			instanceMap := make(map[string]any)
-			result = append(result, instanceMap)
+// 		if instance != nil {
+// 			instanceCount++
+// 			instanceMap := make(map[string]any)
+// 			result = append(result, instanceMap)
 
-			var elementCount uint32
+// 			var elementCount uint32
 
-			err := instance.GetElementCount(&elementCount)
+// 			err := instance.GetElementCount(&elementCount)
 
-			if err != mi.RESULT_OK {
-				fmt.Println("error getting element count")
-			}
+// 			if err != mi.RESULT_OK {
+// 				fmt.Println("error getting element count")
+// 			}
 
-			var i uint32
-			for i = 0; i < elementCount; i++ {
-				// MI_Value value;
-				value := new(mi.Value)
-				// MI_Type type;
-				vType := new(mi.Type)
-				// MI_Uint32 flags;
-				flags := new(mi.Flag)
+// 			var i uint32
+// 			for i = 0; i < elementCount; i++ {
+// 				// MI_Value value;
+// 				value := new(mi.Value)
+// 				// MI_Type type;
+// 				vType := new(mi.Type)
+// 				// MI_Uint32 flags;
+// 				flags := new(mi.Flag)
 
-				name, err := instance.GetElementAt(&i, value, vType, flags)
+// 				name, err := instance.GetElementAt(i, value, vType, flags)
 
-				if err != mi.RESULT_OK {
-					fmt.Fprintf(os.Stderr, "error %d: getting element at index: %d\n", err, i)
-					continue
-				}
+// 				if err != mi.RESULT_OK {
+// 					fmt.Fprintf(os.Stderr, "error %d: getting element at index: %d\n", err, i)
+// 					continue
+// 				}
 
-				if flags.HasFlag(mi.FLAG_NULL) {
-					// Omitting this results in a smaller slice, and still allows for indexing into the result map (returns nil)
-					// key := windows.UTF16PtrToString(name)
-					// instanceMap[key] = nil
-					continue
-				}
+// 				if flags.HasFlag(mi.FLAG_NULL) {
+// 					// Omitting this results in a smaller slice, and still allows for indexing into the result map (returns nil)
+// 					// key := windows.UTF16PtrToString(name)
+// 					// instanceMap[key] = nil
+// 					continue
+// 				}
 
-				key := util.UTF16PtrToString(name)
-				instanceMap[key] = value.As(*vType)
-			}
-		}
-	}
+// 				key := util.UTF16PtrToString(name)
+// 				instanceMap[key] = value.As(*vType)
+// 			}
+// 		}
+// 	}
 
-	return result
-}
+// 	return result
+// }

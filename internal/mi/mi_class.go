@@ -1,14 +1,14 @@
 package mi
 
 type Class struct {
-	ft            *ClassFT
-	classDecl     uintptr
+	ft            *classFT
+	classDecl     *ClassDecl
 	namespaceName *uint16
 	serverName    *uint16
 	reserved      [4]int64
 }
 
-type ClassFT struct {
+type classFT struct {
 	getClassName         uintptr
 	getNameSpace         uintptr
 	getServerName        uintptr

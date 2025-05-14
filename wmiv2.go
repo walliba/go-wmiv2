@@ -10,6 +10,51 @@ import (
 	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
+var instance Application
+var once sync.Once
+
+type Instance interface {
+	GetProperties() *DynamicStruct
+}
+
+type Session interface {
+	Close() error
+	Query(query string) []Instance
+	GetClass(namespace string, class string)
+}
+
+// Application is the root instance to interface with MI
+type Application interface {
+	Close() error
+	NewSession(destination string) (Session, error)
+	Query(query string) []Instance
+}
+
+func Initialize() Application {
+	once.Do(func() {
+		latentInitialize()
+	})
+
+	return instance
+}
+
+func latentInitialize() {
+
+	app := new(mi.Application)
+
+	err := mi.MI_Application_Initialize(app)
+
+	if err != mi.RESULT_OK {
+		panic("error initializing MI_Application")
+	}
+
+	if app == nil {
+		panic("error: init app is nil")
+	}
+
+	instance = &miApplication{raw: app}
+}
+
 /*
 Client should function as a singleton for the lifespan of the application
 
@@ -20,33 +65,32 @@ type Client struct {
 	app           *mi.Application
 }
 
-var instance *Client
-var once sync.Once
+// var instance *Client
 
-func GetClient() *Client {
-	once.Do(func() {
-		fmt.Println("initializing client")
-		app, err := mi.MI_Application_Initialize()
+// func GetClient() *Client {
+// 	once.Do(func() {
+// 		fmt.Println("initializing client")
+// 		app, err := mi.MI_Application_Initialize()
 
-		if err != mi.RESULT_OK {
-			panic("error initializing MI client")
-		}
+// 		if err != mi.RESULT_OK {
+// 			panic("error initializing MI client")
+// 		}
 
-		if app == nil {
-			panic("MI_Application instance is null")
-		}
+// 		if app == nil {
+// 			panic("MI_Application instance is null")
+// 		}
 
-		instance = &Client{true, app}
-	})
-	fmt.Println("Getting client")
-	return instance
-}
+// 		instance = &Client{true, app}
+// 	})
+// 	fmt.Println("Getting client")
+// 	return instance
+// }
 
-func (c *Client) Close() {
-	if err := c.app.Close(); err != mi.RESULT_OK {
-		panic("Failed to close MI_Application handle")
-	}
-}
+// func (c *Client) Close() {
+// 	if err := c.app.Close(); err != mi.RESULT_OK {
+// 		panic("Failed to close MI_Application handle")
+// 	}
+// }
 
 // func (c *Client) EnumerateAllInstances() {
 // 	session, err := c.app.NewSession()
@@ -202,7 +246,7 @@ func (c *Client) Query(query string) []map[string]any {
 				// MI_Uint32 flags;
 				flags := new(mi.Flag)
 
-				name, err := instance.GetElementAt(&i, value, vType, flags)
+				name, err := instance.GetElementAt(i, value, vType, flags)
 
 				if err != mi.RESULT_OK {
 					fmt.Fprintf(os.Stderr, "error %d: getting element at index: %d\n", err, i)

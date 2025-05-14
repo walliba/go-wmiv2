@@ -81,6 +81,7 @@ func (i *Instance) Clone() (*Instance, Result) {
 	return newInstance, Result(r0)
 }
 
+// Destruct deletes an instance that was created on the stack or as a member of a structure.
 func (i *Instance) Destruct() Result {
 	if !i.isValid() {
 		return RESULT_INVALID_PARAMETER
@@ -192,20 +193,20 @@ func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 }
 
 // GetElementAt retrieves the value of the property at the given index.
-func (i *Instance) GetElementAt(idx *uint32, v *Value, t *Type, f *Flag) (*uint16, Result) {
+func (i *Instance) GetElementAt(index uint32, value *Value, valueType *Type, flags *Flag) (*uint16, Result) {
 	if !i.isValid() {
 		return nil, RESULT_INVALID_PARAMETER
 	}
 
-	var name *uint16
+	name := new(uint16)
 
 	r0, _, _ := syscall.SyscallN(i.ft.GetElementAt,
 		uintptr(unsafe.Pointer(i)),
-		uintptr(*idx),
+		uintptr(index),
 		uintptr(unsafe.Pointer(&name)),
-		uintptr(unsafe.Pointer(v)),
-		uintptr(unsafe.Pointer(t)),
-		uintptr(unsafe.Pointer(f)),
+		uintptr(unsafe.Pointer(value)),
+		uintptr(unsafe.Pointer(valueType)),
+		uintptr(unsafe.Pointer(flags)),
 	)
 
 	return name, Result(r0)
