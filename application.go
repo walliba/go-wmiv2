@@ -44,7 +44,12 @@ func (app *miApplication) Close() error {
 	return nil
 }
 
-// Straight forward query with defaults (just avoids using NewSession)
-func (app *miApplication) Query(query string) []Instance {
-	return nil
+// Straight forward query with default session options (localhost)
+func (app *miApplication) Query(namespace string, query string) *[]map[string]any {
+
+	session, _ := app.NewSession("localhost")
+
+	defer session.Close()
+
+	return session.Query(namespace, query)
 }
