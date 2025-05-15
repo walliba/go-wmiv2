@@ -105,3 +105,25 @@ func (s *Session) GetClass(namespaceName string, className string) *Operation {
 
 	return operation
 }
+
+func (s *Session) EnumerateClasses(namespace string, classNamesOnly bool) *Operation {
+
+	w_namespace, _ := syscall.UTF16PtrFromString(namespace)
+	// supplying className seems to panic, not sure how this is used
+	// w_className, _ := syscall.UTF16PtrFromString(className)
+
+	operation := new(Operation)
+
+	_, _, _ = syscall.SyscallN(s.ft.EnumerateClasses,
+		uintptr(unsafe.Pointer(s)),
+		0,
+		0,
+		uintptr(unsafe.Pointer(w_namespace)),
+		0, // uintptr(unsafe.Pointer(w_className)),
+		uintptr(unsafe.Pointer(&classNamesOnly)),
+		0,
+		uintptr(unsafe.Pointer(operation)),
+	)
+
+	return operation
+}

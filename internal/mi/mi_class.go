@@ -1,7 +1,6 @@
 package mi
 
 import (
-	"fmt"
 	"syscall"
 	"unsafe"
 
@@ -40,8 +39,6 @@ func (c *Class) GetClassName() (string, Result) {
 		uintptr(unsafe.Pointer(c)),
 		uintptr(unsafe.Pointer(&w_className)),
 	)
-
-	fmt.Printf("className addr: %p\n", w_className)
 
 	className := util.UTF16PtrToString((*uint16)(w_className))
 

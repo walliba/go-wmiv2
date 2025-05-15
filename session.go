@@ -61,8 +61,9 @@ func (s *miSession) GetClass(namespace string, className string) {
 		fmt.Println("Getting element keys:")
 		for i := range *elementCount {
 			valueType := new(mi.Type)
-			name, _ := class.GetElementAt(i, nil, valueType, nil)
-			fmt.Printf("\t%s: %v\n", name, *valueType)
+			flags := new(mi.Flag)
+			name, _ := class.GetElementAt(i, nil, valueType, flags)
+			fmt.Printf("\t%s: %v :: %s\n", name, *valueType, flags.GetFlags())
 		}
 
 	}
@@ -127,4 +128,31 @@ func (s *miSession) Query(namespace string, query string) *[]map[string]any {
 	}
 
 	return &result
+}
+
+func (s *miSession) GetClasses(namespace string, classNamesOnly bool) {
+	operation := s.raw.EnumerateClasses(namespace, classNamesOnly)
+
+	// This will hang if moreResults = true
+	defer operation.Close()
+
+	// using an arbitrary initial size
+	// TODO: look into inferring this size from MI
+	// result := make([]string, 8)
+
+	for moreResults := true; moreResults; {
+		class, result := operation.GetClass(&moreResults, nil, nil, nil)
+
+		if result != mi.RESULT_OK {
+			fmt.Println("error: operation.GetClass")
+		}
+
+		className, result := class.GetClassName()
+
+		if result != mi.RESULT_OK {
+			fmt.Println("error: GetClassName")
+		}
+
+		fmt.Printf("retrieved class name: %s\n", className)
+	}
 }
