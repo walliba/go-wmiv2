@@ -31,11 +31,3 @@ const (
 	RESULT_SERVER_LIMITS_EXCEEDED                            // 27
 	RESULT_SERVER_IS_SHUTTING_DOWN                           // 28
 )
-
-// type MI_ENUMERATION
-
-// type MI_ClassDecl struct {
-// 	flags uint32
-// 	code  uint32
-// 	name  *uint16
-// }

@@ -9,7 +9,10 @@ import (
 	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
-type Type = int
+// Type is a type alias for uint32
+//
+// According to x64 MSVC 14.38 (per mi.dll PE headers), the enum should be an `unsigned __int64` (uint64), but this should be fine as the enum only contains 32
+type Type = uint32
 
 const (
 	MI_BOOLEAN    Type = iota

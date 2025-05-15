@@ -9,25 +9,25 @@ import (
 type Application struct {
 	reserved1 uint64
 	reserved2 int64
-	ft        *ApplicationFT
+	ft        *applicationFT
 }
 
-type ApplicationFT struct {
-	Close                          uintptr
-	NewSession                     uintptr
-	NewHostedProvider              uintptr
-	NewInstance                    uintptr
-	NewDestinationOptions          uintptr
-	NewOperationOptions            uintptr
-	NewSubscriptionDeliveryOptions uintptr
-	NewSerializer                  uintptr
-	NewDeserializer                uintptr
-	NewInstanceFromClass           uintptr
-	NewClass                       uintptr
+type applicationFT struct {
+	close                          uintptr
+	newSession                     uintptr
+	newHostedProvider              uintptr
+	newInstance                    uintptr
+	newDestinationOptions          uintptr
+	newOperationOptions            uintptr
+	newSubscriptionDeliveryOptions uintptr
+	newSerializer                  uintptr
+	newDeserializer                uintptr
+	newInstanceFromClass           uintptr
+	newClass                       uintptr
 }
 
 func (app *Application) Close() Result {
-	r0, _, _ := syscall.SyscallN(app.ft.Close, uintptr(unsafe.Pointer(app)))
+	r0, _, _ := syscall.SyscallN(app.ft.close, uintptr(unsafe.Pointer(app)))
 
 	return Result(r0)
 }
@@ -36,7 +36,7 @@ func (app *Application) NewSession(destination *uint16, options *DestinationOpti
 	// TODO: verify if this allows GC to free?
 	session := &Session{}
 
-	r0, _, _ := syscall.SyscallN(app.ft.NewSession,
+	r0, _, _ := syscall.SyscallN(app.ft.newSession,
 		uintptr(unsafe.Pointer(app)),         // self *Application
 		uintptr(0),                           // protocol *uint16
 		uintptr(unsafe.Pointer(destination)), // destination *uint16
@@ -60,7 +60,7 @@ func (app *Application) NewInstance() {
 func (app *Application) NewDestinationOptions() (*DestinationOptions, Result) {
 	options := &DestinationOptions{}
 
-	r0, _, _ := syscall.SyscallN(app.ft.NewDestinationOptions,
+	r0, _, _ := syscall.SyscallN(app.ft.newDestinationOptions,
 		uintptr(unsafe.Pointer(app)),     // self *Application
 		uintptr(unsafe.Pointer(options)), // options *DestinationOptions
 	)
@@ -92,15 +92,15 @@ func (app *Application) NewClass() {
 	panic("not implemented")
 }
 
-// TODO: Convert to app.Initialize()
-func MI_Application_Initialize() (*Application, Result) {
-	flags := uint32(0)
-
-	application := &Application{}
+// Initializes the *mi.Application passed
+func MI_Application_Initialize(application *Application) Result {
 
 	r0, _, _ := procMIApplicationInitialize.Call(
-		uintptr(flags), 0, 0, uintptr(unsafe.Pointer(application)),
+		0,                                    // flags uint32
+		0,                                    // applicationID *uint16
+		0,                                    // extendedError **Instance
+		uintptr(unsafe.Pointer(application)), // application *Application
 	)
 
-	return application, Result(r0)
+	return Result(r0)
 }

@@ -63,6 +63,27 @@ func (o *Operation) GetIndication() {
 	panic("not implemented")
 }
 
-func (o *Operation) GetClass() {
-	panic("not implemented")
+/*
+GetClass signature
+
+	[in]		operation *Operation
+	[out]		classResult **Class
+	[out, optional] moreResults *bool
+	[out, optional]	result *Result
+	[out, optional]	errorMessage **uint16
+	[out, optional] completionDetails **Instance
+*/
+func (o *Operation) GetClass(moreResults *bool, result *Result, errorMessage *uint16, completionDetails **Instance) (*Class, Result) {
+	classResult := new(Class)
+
+	r0, _, _ := syscall.SyscallN(o.ft.GetClass,
+		uintptr(unsafe.Pointer(o)),
+		uintptr(unsafe.Pointer(&classResult)),
+		uintptr(unsafe.Pointer(moreResults)),
+		uintptr(unsafe.Pointer(result)),
+		uintptr(unsafe.Pointer(errorMessage)),
+		uintptr(unsafe.Pointer(completionDetails)),
+	)
+
+	return classResult, Result(r0)
 }
