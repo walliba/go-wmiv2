@@ -1,9 +1,9 @@
 package wmiv2
 
 type miInstance struct {
-	properties *DynamicStruct
+	properties any // ???
 }
 
-func (inst *miInstance) GetProperties() *DynamicStruct {
-	return inst.properties
+func (inst *miInstance) GetProperties() any {
+	return nil
 }

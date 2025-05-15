@@ -14,7 +14,7 @@ var instance Application
 var once sync.Once
 
 type Instance interface {
-	GetProperties() *DynamicStruct
+	GetProperties() any // ???
 }
 
 type Session interface {

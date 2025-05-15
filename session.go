@@ -32,7 +32,37 @@ func (s *miSession) GetClass(namespace string, className string) {
 			fmt.Println("error: operation.GetClass")
 		}
 
-		fmt.Println(class)
+		className, result := class.GetClassName()
+
+		if result != mi.RESULT_OK {
+			fmt.Println("error: GetClassName")
+		}
+
+		fmt.Printf("retrieved class name: %s\n", className)
+
+		namespace, result := class.GetNameSpace()
+
+		if result != mi.RESULT_OK {
+			fmt.Println("error: GetNamespace")
+		}
+
+		fmt.Printf("retrieved namespace: %s\n", namespace)
+
+		serverName, _ := class.GetServerName()
+
+		fmt.Printf("retrieved server name: %s\n", serverName)
+
+		elementCount, _ := class.GetElementCount()
+
+		fmt.Printf("retrieved element count: %d\n", *elementCount)
+
+		fmt.Println("Getting element keys:")
+		for i := range *elementCount {
+			valueType := new(mi.Type)
+			name, _ := class.GetElementAt(i, nil, valueType, nil)
+			fmt.Printf("\t%s: %v\n", name, *valueType)
+		}
+
 	}
 }
 
