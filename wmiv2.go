@@ -19,7 +19,7 @@ type Instance interface {
 
 type Session interface {
 	Close() error
-	Query(query string) []Instance
+	Query(namespace string, query string) *[]map[string]any
 	GetClass(namespace string, class string)
 }
 
