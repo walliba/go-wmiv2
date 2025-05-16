@@ -9,7 +9,7 @@ import (
 )
 
 type Instance struct {
-	ft         *InstanceFT
+	ft         *instanceFT
 	classDecl  uintptr
 	serverName uintptr
 	nameSpace  uintptr
@@ -17,29 +17,29 @@ type Instance struct {
 }
 
 type InstanceExFT struct {
-	parent    InstanceFT
-	Normalize uintptr
+	parent    instanceFT
+	normalize uintptr
 }
 
-type InstanceFT struct {
-	Clone           uintptr
-	Destruct        uintptr
-	Delete          uintptr
-	IsA             uintptr
-	GetClassName    uintptr
-	SetNameSpace    uintptr
-	GetNameSpace    uintptr
-	GetElementCount uintptr
-	AddElement      uintptr
-	SetElement      uintptr
-	SetElementAt    uintptr
-	GetElement      uintptr
-	GetElementAt    uintptr
-	ClearElement    uintptr
-	ClearElementAt  uintptr
-	GetServerName   uintptr
-	SetServerName   uintptr
-	GetClass        uintptr
+type instanceFT struct {
+	clone           uintptr
+	destruct        uintptr
+	delete          uintptr
+	isA             uintptr
+	getClassName    uintptr
+	setNameSpace    uintptr
+	getNameSpace    uintptr
+	getElementCount uintptr
+	addElement      uintptr
+	setElement      uintptr
+	setElementAt    uintptr
+	getElement      uintptr
+	getElementAt    uintptr
+	clearElement    uintptr
+	clearElementAt  uintptr
+	getServerName   uintptr
+	setServerName   uintptr
+	getClass        uintptr
 }
 
 func (i *Instance) String() string {
@@ -66,7 +66,7 @@ func (i *Instance) Clone() (*Instance, Result) {
 
 	var newInstance *Instance
 
-	r0, _, _ := syscall.SyscallN(i.ft.Clone,
+	r0, _, _ := syscall.SyscallN(i.ft.clone,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(&newInstance)),
 	)
@@ -87,7 +87,7 @@ func (i *Instance) Destruct() Result {
 		return RESULT_INVALID_PARAMETER
 	}
 
-	r0, _, _ := syscall.SyscallN(i.ft.Destruct,
+	r0, _, _ := syscall.SyscallN(i.ft.destruct,
 		uintptr(unsafe.Pointer(i)),
 	)
 
@@ -101,7 +101,7 @@ func (i *Instance) Delete() Result {
 		return RESULT_INVALID_PARAMETER
 	}
 
-	r0, _, _ := syscall.SyscallN(i.ft.Delete,
+	r0, _, _ := syscall.SyscallN(i.ft.delete,
 		uintptr(unsafe.Pointer(i)),
 	)
 
@@ -119,7 +119,7 @@ func (i *Instance) GetClassName() (*uint16, Result) {
 
 	var className *uint16
 
-	r0, _, _ := syscall.SyscallN(i.ft.GetClassName,
+	r0, _, _ := syscall.SyscallN(i.ft.getClassName,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(&className)),
 	)
@@ -138,7 +138,7 @@ func (i *Instance) GetNameSpace() (*uint16, Result) {
 
 	var namespace *uint16
 
-	r0, _, _ := syscall.SyscallN(i.ft.GetNameSpace,
+	r0, _, _ := syscall.SyscallN(i.ft.getNameSpace,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(&namespace)),
 	)
@@ -151,7 +151,7 @@ func (i *Instance) GetElementCount(count *uint32) Result {
 		return RESULT_INVALID_PARAMETER
 	}
 
-	r0, _, _ := syscall.SyscallN(i.ft.GetElementCount,
+	r0, _, _ := syscall.SyscallN(i.ft.getElementCount,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(count)),
 	)
@@ -180,7 +180,7 @@ func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 	// Discard error because the syscall will return a RESULT_INVALID_PARAMETER anyway
 	n, _ := syscall.UTF16PtrFromString(name)
 
-	r0, _, _ := syscall.SyscallN(i.ft.GetElement,
+	r0, _, _ := syscall.SyscallN(i.ft.getElement,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(unsafe.Pointer(n)),
 		uintptr(unsafe.Pointer(v)),
@@ -200,7 +200,7 @@ func (i *Instance) GetElementAt(index uint32, value *Value, valueType *Type, fla
 
 	name := new(uint16)
 
-	r0, _, _ := syscall.SyscallN(i.ft.GetElementAt,
+	r0, _, _ := syscall.SyscallN(i.ft.getElementAt,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(index),
 		uintptr(unsafe.Pointer(&name)),

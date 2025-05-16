@@ -8,22 +8,22 @@ import (
 type Operation struct {
 	reserved1 uint64
 	reserved2 int64 // ptrdiff_t
-	ft        *OperationFT
+	ft        *operationFT
 }
 
-type OperationFT struct {
-	Close         uintptr
-	Cancel        uintptr
-	GetSession    uintptr
-	GetInstance   uintptr
-	GetIndication uintptr
-	GetClass      uintptr
+type operationFT struct {
+	close         uintptr
+	cancel        uintptr
+	getSession    uintptr
+	getInstance   uintptr
+	getIndication uintptr
+	getClass      uintptr
 }
 
 var MI_OPERATION_NULL = Operation{0, 0, nil}
 
 func (o *Operation) Close() Result {
-	r0, _, _ := syscall.SyscallN(o.ft.Close,
+	r0, _, _ := syscall.SyscallN(o.ft.close,
 		uintptr(unsafe.Pointer(o)), // [in, out] MI_Operation *operation
 	)
 
@@ -31,7 +31,7 @@ func (o *Operation) Close() Result {
 }
 
 func (o *Operation) Cancel() Result {
-	r0, _, _ := syscall.SyscallN(o.ft.Cancel,
+	r0, _, _ := syscall.SyscallN(o.ft.cancel,
 		uintptr(unsafe.Pointer(o)),
 		0,
 	)
@@ -47,7 +47,7 @@ func (o *Operation) GetSession() {
 func (o *Operation) GetInstance(moreResults *bool, args ...any) (*Instance, Result) {
 	var instance = &Instance{}
 
-	r0, _, _ := syscall.SyscallN(o.ft.GetInstance,
+	r0, _, _ := syscall.SyscallN(o.ft.getInstance,
 		uintptr(unsafe.Pointer(o)),           // [in] 				MI_Operation		*operation
 		uintptr(unsafe.Pointer(&instance)),   // 					const MI_Instance	**instance
 		uintptr(unsafe.Pointer(moreResults)), // [out, optional] 	MI_Boolean 			*moreResults
@@ -76,7 +76,7 @@ GetClass signature
 func (o *Operation) GetClass(moreResults *bool, result *Result, errorMessage *uint16, completionDetails **Instance) (*Class, Result) {
 	classResult := new(Class)
 
-	r0, _, _ := syscall.SyscallN(o.ft.GetClass,
+	r0, _, _ := syscall.SyscallN(o.ft.getClass,
 		uintptr(unsafe.Pointer(o)),
 		uintptr(unsafe.Pointer(&classResult)),
 		uintptr(unsafe.Pointer(moreResults)),

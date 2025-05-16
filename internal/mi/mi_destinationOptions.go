@@ -34,25 +34,25 @@ var (
 type DestinationOptions struct {
 	reserved1 uint64
 	reserved2 int64 // ptrdiff_t
-	ft        *DestinationOptionsFT
+	ft        *destinationOptionsFT
 }
 
-type DestinationOptionsFT struct {
-	Delete                   uintptr
-	SetString                uintptr
-	SetNumber                uintptr
-	AddCredentials           uintptr
-	GetString                uintptr
-	GetNumber                uintptr
-	GetOptionCount           uintptr
-	GetOptionAt              uintptr
-	GetOption                uintptr
-	GetCredentialsCount      uintptr
-	GetCredentialsAt         uintptr
-	GetCredentialsPasswordAt uintptr
-	Clone                    uintptr
-	SetInterval              uintptr
-	GetInterval              uintptr
+type destinationOptionsFT struct {
+	delete                   uintptr
+	setString                uintptr
+	setNumber                uintptr
+	addCredentials           uintptr
+	getString                uintptr
+	getNumber                uintptr
+	getOptionCount           uintptr
+	getOptionAt              uintptr
+	getOption                uintptr
+	getCredentialsCount      uintptr
+	getCredentialsAt         uintptr
+	getCredentialsPasswordAt uintptr
+	clone                    uintptr
+	setInterval              uintptr
+	getInterval              uintptr
 }
 
 func (do *DestinationOptions) isValid() bool {
@@ -62,7 +62,7 @@ func (do *DestinationOptions) isValid() bool {
 // Delete deletes the destination options structure created by using Application.NewDestinationOptions or DestinationOptions.Clone
 func (do *DestinationOptions) Delete() {
 	if do.isValid() {
-		_, _, _ = syscall.SyscallN(do.ft.Delete,
+		_, _, _ = syscall.SyscallN(do.ft.delete,
 			uintptr(unsafe.Pointer(do)),
 		)
 	}
@@ -77,7 +77,7 @@ func (do *DestinationOptions) AddCredentials(credentials *UserCredentials) Resul
 		return RESULT_INVALID_PARAMETER
 	}
 
-	r0, _, _ := syscall.SyscallN(do.ft.AddCredentials,
+	r0, _, _ := syscall.SyscallN(do.ft.addCredentials,
 		uintptr(unsafe.Pointer(do)),                      // options *DestinationOptions
 		uintptr(unsafe.Pointer(DESTINATION_CREDENTIALS)), // optionName *uint16
 		uintptr(unsafe.Pointer(credentials)),             // credentials *UserCredentials
