@@ -35,3 +35,21 @@ func UTF16PtrToString(p *uint16) string {
 	}
 	return syscall.UTF16ToString(unsafe.Slice(p, n))
 }
+
+// UTF16PtrZero zeroes a UTF-16 string, effectively setting all characters to 0
+func UTF16PtrZero(p *uint16) {
+	if p == nil {
+		return
+	}
+
+	if *p == 0 {
+		return
+	}
+
+	end := unsafe.Pointer(p)
+
+	for *(*uint16)(end) != 0 {
+		*(*uint16)(end) = 0
+		end = unsafe.Add(end, unsafe.Sizeof(*p))
+	}
+}

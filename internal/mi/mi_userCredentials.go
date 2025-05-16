@@ -2,8 +2,8 @@ package mi
 
 import (
 	"syscall"
-	"unsafe"
 
+	"github.com/walliba/go-wmiv2/internal/mi/util"
 	"golang.org/x/sys/windows"
 )
 
@@ -40,21 +40,8 @@ func NewUserCredentials(authType AuthType, domain string, username string, passw
 	}
 }
 
-func zeroUTF16String(p *uint16) {
-	if p == nil {
-		return
-	}
-	for i := 0; ; i++ {
-		ptr := (*uint16)(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + uintptr(i*2)))
-		if *ptr == 0 {
-			break
-		}
-		*ptr = 0
-	}
-}
-
 func (uc *UserCredentials) Destroy() {
-	zeroUTF16String(uc.password)
-	zeroUTF16String(uc.username)
-	zeroUTF16String(uc.domain)
+	util.UTF16PtrZero(uc.password)
+	util.UTF16PtrZero(uc.username)
+	util.UTF16PtrZero(uc.domain)
 }
