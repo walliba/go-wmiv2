@@ -8,14 +8,19 @@ import (
 )
 
 func main() {
-	client := wmiv2.GetClient()
+	// Get MI_Application instance
+	app := wmiv2.GetApplication()
 
-	defer client.Close()
+	// defer cleanup of the MI_Application instance
+	defer app.Close()
 
-	result := client.Query("select name, processid from win32_process")
+	// query by namespace and WQL string
+	// NOTE: result is temporarily a *[]map[string]any. Working on better solution
+	result := app.Query("root\\cimv2", "select name, processid from win32_process")
 
-	for i := range result {
-		fmt.Printf("Process '%s' with PID %d\n", result[i]["Name"], result[i]["ProcessId"])
+	// print results
+	for i := range *result {
+		fmt.Printf("Process '%s' with PID %d\n", (*result)[i]["Name"], (*result)[i]["ProcessId"])
 	}
 
 	os.Exit(0)
