@@ -129,8 +129,8 @@ func (s *miSession) Query(namespace string, query string) []*map[string]any {
 	return result
 }
 
-func (s *miSession) GetClasses(namespace string, classNamesOnly bool) {
-	operation := s.raw.EnumerateClasses(namespace, classNamesOnly)
+func (s *miSession) GetClassNames(namespace string) []string {
+	operation := s.raw.EnumerateClasses(namespace, "", true)
 
 	// This will hang if moreResults = true
 	defer operation.Close()
@@ -139,19 +139,31 @@ func (s *miSession) GetClasses(namespace string, classNamesOnly bool) {
 	// TODO: look into inferring this size from MI
 	// result := make([]string, 8)
 
+	classNames := make([]string, 0)
+
 	for moreResults := true; moreResults; {
-		class, result := operation.GetClass(&moreResults, nil, nil, nil)
+		innerResult := new(mi.Result)
+		class, result := operation.GetClass(&moreResults, innerResult, nil, nil)
 
 		if result != mi.RESULT_OK {
 			fmt.Println("error: operation.GetClass")
+			continue
+		}
+
+		if class == nil {
+			// fmt.Printf("error: %d\n", *innerResult)
+			continue
 		}
 
 		className, result := class.GetClassName()
 
 		if result != mi.RESULT_OK {
 			fmt.Println("error: GetClassName")
+			continue
 		}
 
-		fmt.Printf("retrieved class name: %s\n", className)
+		classNames = append(classNames, className)
 	}
+
+	return classNames
 }

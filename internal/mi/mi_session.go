@@ -124,22 +124,22 @@ func (s *Session) GetClass(namespaceName string, className string) *Operation {
 	return operation
 }
 
-func (s *Session) EnumerateClasses(namespace string, classNamesOnly bool) *Operation {
+// Doc: https://learn.microsoft.com/en-us/windows/win32/api/mi/nf-mi-mi_session_enumerateclasses
+func (s *Session) EnumerateClasses(namespace string, className string, classNamesOnly bool) *Operation {
 
 	w_namespace, _ := syscall.UTF16PtrFromString(namespace)
-	// supplying className seems to panic, not sure how this is used
-	// w_className, _ := syscall.UTF16PtrFromString(className)
-
+	// Returns classes that derive from className. (e.g, CIM_Process returns Win32_Process)
+	w_className, _ := syscall.UTF16PtrFromString(className)
 	operation := new(Operation)
 
 	_, _, _ = syscall.SyscallN(s.ft.enumerateClasses,
 		uintptr(unsafe.Pointer(s)),
-		0,
-		0,
+		0, // uintptr(flags),
+		0, // uintptr(unsafe.Pointer(options)), // *OperationOptions
 		uintptr(unsafe.Pointer(w_namespace)),
-		0, // uintptr(unsafe.Pointer(w_className)),
-		uintptr(unsafe.Pointer(&classNamesOnly)),
-		0,
+		uintptr(unsafe.Pointer(w_className)),
+		uintptr(*(*uint8)(unsafe.Pointer(&classNamesOnly))), // cast bool to uint8 (unsigned char)
+		0, // uintptr(unsafe.Pointer(callbacks)),
 		uintptr(unsafe.Pointer(operation)),
 	)
 

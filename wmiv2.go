@@ -18,7 +18,7 @@ type Session interface {
 	Close() error
 	Query(namespace string, query string) []*map[string]any
 	GetClass(namespace string, class string)
-	GetClasses(namespace string, classNamesOnly bool)
+	GetClassNames(namespace string) []string
 }
 
 // Application is an interface describing an MI_Application instance. All interaction with MI must begin with this instance.
