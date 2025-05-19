@@ -53,7 +53,7 @@ const (
 // Value resembles an MI_Value union allowing for arbitrary type casting
 type Value struct {
 	// The address of the arbitrary type
-	raw unsafe.Pointer
+	raw [36]byte
 }
 
 // As reinterpret casts, or allocates (make), the memory at v.raw with the Go equivalent denoted by t
