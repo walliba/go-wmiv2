@@ -16,7 +16,7 @@ type Instance interface {
 
 type Session interface {
 	Close() error
-	Query(namespace string, query string) *[]map[string]any
+	Query(namespace string, query string) []*map[string]any
 	GetClass(namespace string, class string)
 	GetClasses(namespace string, classNamesOnly bool)
 }
@@ -25,7 +25,7 @@ type Session interface {
 type Application interface {
 	Close() error
 	NewSession(destination string) (Session, error)
-	Query(namespace string, query string) *[]map[string]any
+	Query(namespace string, query string) []*map[string]any
 }
 
 // GetApplication returns the MI Application instance.

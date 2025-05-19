@@ -45,7 +45,7 @@ func (o *Operation) GetSession() {
 
 // Calling MI_Operation_Close before retrieving the last result where moreResults is set to MI_FALSE will cause the MI_Operation_Close function to stop responding.
 func (o *Operation) GetInstance(moreResults *bool, args ...any) (*Instance, Result) {
-	var instance = &Instance{}
+	instance := &Instance{}
 
 	r0, _, _ := syscall.SyscallN(o.ft.getInstance,
 		uintptr(unsafe.Pointer(o)),           // [in] 				MI_Operation		*operation
@@ -74,7 +74,7 @@ GetClass signature
 	[out, optional] completionDetails **Instance
 */
 func (o *Operation) GetClass(moreResults *bool, result *Result, errorMessage *uint16, completionDetails **Instance) (*Class, Result) {
-	classResult := new(Class)
+	classResult := &Class{}
 
 	r0, _, _ := syscall.SyscallN(o.ft.getClass,
 		uintptr(unsafe.Pointer(o)),

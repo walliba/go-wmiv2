@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/walliba/go-wmiv2/internal/mi"
-	"github.com/walliba/go-wmiv2/internal/mi/util"
 )
 
 type miSession struct {
@@ -69,7 +68,7 @@ func (s *miSession) GetClass(namespace string, className string) {
 	}
 }
 
-func (s *miSession) Query(namespace string, query string) *[]map[string]any {
+func (s *miSession) Query(namespace string, query string) []*map[string]any {
 	operation := s.raw.QueryInstances(namespace, query)
 
 	// This will hang if moreResults = true
@@ -77,7 +76,7 @@ func (s *miSession) Query(namespace string, query string) *[]map[string]any {
 
 	// using an arbitrary initial size
 	// TODO: look into inferring this size from MI
-	result := make([]map[string]any, 8)
+	result := make([]*map[string]any, 8)
 
 	for moreResults := true; moreResults; {
 
@@ -93,7 +92,7 @@ func (s *miSession) Query(namespace string, query string) *[]map[string]any {
 			err := instance.GetElementCount(&elementCount)
 
 			instanceMap := make(map[string]any, elementCount)
-			result = append(result, instanceMap)
+			result = append(result, &instanceMap)
 
 			if err != mi.RESULT_OK {
 				fmt.Println("error getting element count")
@@ -121,13 +120,13 @@ func (s *miSession) Query(namespace string, query string) *[]map[string]any {
 					continue
 				}
 
-				key := util.UTF16PtrToString(name)
-				instanceMap[key] = value.As(*vType)
+				// NOTE: I should probably check if `name` is an empty string?
+				instanceMap[name] = value.As(*vType)
 			}
 		}
 	}
 
-	return &result
+	return result
 }
 
 func (s *miSession) GetClasses(namespace string, classNamesOnly bool) {

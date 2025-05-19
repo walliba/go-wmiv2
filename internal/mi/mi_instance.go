@@ -43,13 +43,13 @@ type instanceFT struct {
 }
 
 func (i *Instance) String() string {
-	n, err := i.GetClassName()
+	className, err := i.GetClassName()
 
 	if err != RESULT_OK {
 		return "<class_instance>"
 	}
 
-	return util.UTF16PtrToString(n)
+	return className
 }
 
 func (i *Instance) isValid() bool {
@@ -112,17 +112,19 @@ func (i *Instance) IsA() {
 	panic("not implemented")
 }
 
-func (i *Instance) GetClassName() (*uint16, Result) {
+func (i *Instance) GetClassName() (string, Result) {
 	if !i.isValid() {
-		return nil, RESULT_INVALID_PARAMETER
+		return "", RESULT_INVALID_PARAMETER
 	}
 
-	var className *uint16
+	var w_className *uint16
 
 	r0, _, _ := syscall.SyscallN(i.ft.getClassName,
 		uintptr(unsafe.Pointer(i)),
-		uintptr(unsafe.Pointer(&className)),
+		uintptr(unsafe.Pointer(&w_className)),
 	)
+
+	className := util.UTF16PtrToString(w_className)
 
 	return className, Result(r0)
 }
@@ -131,17 +133,19 @@ func (i *Instance) SetNameSpace() {
 	panic("not implemented")
 }
 
-func (i *Instance) GetNameSpace() (*uint16, Result) {
+func (i *Instance) GetNameSpace() (string, Result) {
 	if !i.isValid() {
-		return nil, RESULT_INVALID_PARAMETER
+		return "", RESULT_INVALID_PARAMETER
 	}
 
-	var namespace *uint16
+	var w_namespace *uint16
 
 	r0, _, _ := syscall.SyscallN(i.ft.getNameSpace,
 		uintptr(unsafe.Pointer(i)),
-		uintptr(unsafe.Pointer(&namespace)),
+		uintptr(unsafe.Pointer(&w_namespace)),
 	)
+
+	namespace := util.UTF16PtrToString(w_namespace)
 
 	return namespace, Result(r0)
 }
@@ -193,21 +197,24 @@ func (i *Instance) GetElement(name string, v *Value, t *Type, f *Flag) Result {
 }
 
 // GetElementAt retrieves the value of the property at the given index.
-func (i *Instance) GetElementAt(index uint32, value *Value, valueType *Type, flags *Flag) (*uint16, Result) {
+func (i *Instance) GetElementAt(index uint32, value *Value, valueType *Type, flags *Flag) (string, Result) {
 	if !i.isValid() {
-		return nil, RESULT_INVALID_PARAMETER
+		return "", RESULT_INVALID_PARAMETER
 	}
 
-	name := new(uint16)
+	// name := new(uint16)
+	var w_name *uint16
 
 	r0, _, _ := syscall.SyscallN(i.ft.getElementAt,
 		uintptr(unsafe.Pointer(i)),
 		uintptr(index),
-		uintptr(unsafe.Pointer(&name)),
+		uintptr(unsafe.Pointer(&w_name)),
 		uintptr(unsafe.Pointer(value)),
 		uintptr(unsafe.Pointer(valueType)),
 		uintptr(unsafe.Pointer(flags)),
 	)
+
+	name := util.UTF16PtrToString(w_name)
 
 	return name, Result(r0)
 }

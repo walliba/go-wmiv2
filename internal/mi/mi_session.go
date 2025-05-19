@@ -53,7 +53,7 @@ func (s *Session) EnumerateInstances(namespace string, class string) *Operation 
 	ns, _ := syscall.UTF16PtrFromString(namespace)
 	c, _ := syscall.UTF16PtrFromString(class)
 
-	var miOperation = MI_OPERATION_NULL
+	operation := new(Operation)
 
 	_, _, _ = syscall.SyscallN(s.ft.enumerateInstances,
 		uintptr(unsafe.Pointer(s)),
@@ -63,10 +63,10 @@ func (s *Session) EnumerateInstances(namespace string, class string) *Operation 
 		uintptr(unsafe.Pointer(c)),
 		0,
 		0,
-		uintptr(unsafe.Pointer(&miOperation)),
+		uintptr(unsafe.Pointer(operation)),
 	)
 
-	return &miOperation
+	return operation
 }
 
 func (s *Session) QueryInstances(namespace string, query string) *Operation {
@@ -74,20 +74,20 @@ func (s *Session) QueryInstances(namespace string, query string) *Operation {
 	d, _ := syscall.UTF16PtrFromString("WQL")
 	q, _ := syscall.UTF16PtrFromString(query)
 
-	var miOperation = MI_OPERATION_NULL
+	operation := new(Operation)
 
 	_, _, _ = syscall.SyscallN(s.ft.queryInstances,
-		uintptr(unsafe.Pointer(s)),            // Session
-		0,                                     // Flags
-		uintptr(0),                            // Options
-		uintptr(unsafe.Pointer(ns)),           // CIM Namespace
-		uintptr(unsafe.Pointer(d)),            // Query dialect
-		uintptr(unsafe.Pointer(q)),            // Query string
-		0,                                     // Callbacks
-		uintptr(unsafe.Pointer(&miOperation)), // Operation
+		uintptr(unsafe.Pointer(s)),         // Session
+		0,                                  // Flags
+		uintptr(0),                         // Options
+		uintptr(unsafe.Pointer(ns)),        // CIM Namespace
+		uintptr(unsafe.Pointer(d)),         // Query dialect
+		uintptr(unsafe.Pointer(q)),         // Query string
+		0,                                  // Callbacks
+		uintptr(unsafe.Pointer(operation)), // Operation
 	)
 
-	return &miOperation
+	return operation
 
 }
 

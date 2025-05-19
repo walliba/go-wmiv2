@@ -45,7 +45,7 @@ func (app *miApplication) Close() error {
 }
 
 // Straight forward query with default session options (localhost)
-func (app *miApplication) Query(namespace string, query string) *[]map[string]any {
+func (app *miApplication) Query(namespace string, query string) []*map[string]any {
 
 	session, _ := app.NewSession("localhost")
 
