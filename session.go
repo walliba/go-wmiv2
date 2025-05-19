@@ -76,7 +76,7 @@ func (s *miSession) Query(namespace string, query string) []*map[string]any {
 
 	// using an arbitrary initial size
 	// TODO: look into inferring this size from MI
-	result := make([]*map[string]any, 8)
+	result := make([]*map[string]any, 0)
 
 	for moreResults := true; moreResults; {
 
