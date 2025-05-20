@@ -15,7 +15,7 @@ type Timestamp struct {
 	Minute       uint32
 	Second       uint32
 	Microseconds uint32
-	Utc          uint32
+	Utc          int32
 }
 
 func (ts Timestamp) String() string {
