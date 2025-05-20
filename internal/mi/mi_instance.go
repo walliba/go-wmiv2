@@ -13,7 +13,7 @@ type Instance struct {
 	classDecl  uintptr
 	serverName uintptr
 	nameSpace  uintptr
-	reserved   [4]int64
+	reserved   [4]ptrdiff_t
 }
 
 type InstanceExFT struct {

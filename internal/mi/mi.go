@@ -6,6 +6,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+type ptrdiff_t = int64
+
 var (
 	modmi                       = windows.NewLazySystemDLL("mi.dll")
 	procMIApplicationInitialize = modmi.NewProc("MI_Application_InitializeV1")

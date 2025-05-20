@@ -2,7 +2,7 @@ package mi
 
 type OperationOptions struct {
 	reserved1 uint64
-	reserved2 int64 // ptrdiff_t
+	reserved2 ptrdiff_t
 	ft        *operationOptionsFT
 }
 

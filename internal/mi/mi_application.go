@@ -8,7 +8,7 @@ import (
 // _MI_Application
 type Application struct {
 	reserved1 uint64
-	reserved2 int64
+	reserved2 ptrdiff_t
 	ft        *applicationFT
 }
 
