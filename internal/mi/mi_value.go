@@ -97,7 +97,8 @@ func (v *Value) As(t Type) any {
 		return "<not_implemented>"
 	case MI_INSTANCE:
 		return (*(**Instance)(ptr)).String() // workaround for premature GC issue
-
+		// instance, _ := (*(**Instance)(ptr)).Clone()
+		// return instance
 	// Arrays
 	case MI_BOOLEANA:
 		return (*(*types.Array[bool])(ptr)).MakeSlice()
